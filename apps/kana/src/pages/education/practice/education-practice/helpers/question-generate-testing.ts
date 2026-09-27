@@ -5,6 +5,7 @@ import {
   PracticeQuestion,
 } from "@/pages/education/practice/education-practice/lib/types/questions";
 import { Kana, PracticeType } from "@/shared/constants/kana";
+import { shuffleArray } from "@/shared/helpers/letters";
 
 interface questionGenerateTestingProps {
   availableHiraganaLetters: ILetter[];
@@ -29,13 +30,11 @@ const getQuestion = (
 };
 
 const getAnswers = (availableAnswerLetters: ILetter[], answer: ILetter): ILetter[] => {
-  const filtered = availableAnswerLetters
-    .filter((letter) => answer.id !== letter.id)
-    .sort(() => Math.random() - 0.5);
+  const wrongAnswers = shuffleArray(
+    availableAnswerLetters.filter((letter) => answer.id !== letter.id),
+  ).slice(0, 3);
 
-  const shuffled = [...filtered.slice(0, 3), answer].sort(() => Math.random() - 0.5);
-
-  return shuffled;
+  return shuffleArray([...wrongAnswers, answer]);
 };
 
 const questionGenerateTesting = ({

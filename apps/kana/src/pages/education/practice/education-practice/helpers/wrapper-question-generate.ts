@@ -15,6 +15,7 @@ import { kanaTemplates } from "@/features/drawing/lib/hieroglyph-recognition/tem
 import { PracticeQuestion } from "@/pages/education/practice/education-practice/lib/types/questions";
 import { Kana, KanaAlphabet, PracticeType } from "@/shared/constants/kana";
 import { Word } from "@/shared/data/words";
+import { shuffleArray } from "@/shared/helpers/letters";
 
 interface State {
   modes: PracticeType[];
@@ -33,8 +34,6 @@ function generateWordsKanaTemplate(
   hiragana: Word[],
   questionsLength: number,
 ): Kana[] {
-  const shuffleArray = <T>(arr: T[]): T[] => arr.sort(() => Math.random() - 0.5);
-
   return shuffleArray([
     ...Array(hiragana.length).fill(Kana.Hiragana),
     ...Array(katakana.length).fill(Kana.Katakana),
@@ -50,8 +49,6 @@ function generateKanaTemplate(
   const pairs: [Kana, Kana][] = [];
 
   const randomChoice = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-  const shuffleArray = <T>(arr: T[]): T[] => arr.sort(() => Math.random() - 0.5);
-
   const hiraganaCount = availableHiraganaLetters.length;
   const katakanaCount = availableKatakanaLetters.length;
 
