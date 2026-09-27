@@ -63,3 +63,16 @@ index da42873cad53e841becb743de6e0d733ab982ce1..f7247b87fbad508f41d6ec915c28ca29
  #import "DatePicker.h"
  #import "RNDatePicker.h"
  
+diff --git a/android/build.gradle b/android/build.gradle
+index b2803c4f830c53c52831695190c30e5f0a803ddd..ea1069292aa9280cecd9b97fd81f925d6e6c9433 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -51,7 +51,7 @@ android {
+     buildTypes {
+         release {
+             minifyEnabled false
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+         }
+     }
+ }

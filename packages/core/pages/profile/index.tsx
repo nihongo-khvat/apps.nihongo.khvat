@@ -153,7 +153,7 @@ const makeStyles = (colors: ColorsType) =>
       backgroundColor: colors.BgPrimary,
     },
     content: {
-      marginTop: 16,
+      paddingTop: 16,
       paddingHorizontal: 16,
     },
   });

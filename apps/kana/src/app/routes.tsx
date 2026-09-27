@@ -19,7 +19,7 @@ import WelcomePage from "@nihongo/core/pages/welcome/welcome";
 import { isAndroid } from "@nihongo/core/shared/constants/platformUtil";
 import { ModalProvider } from "@nihongo/core/shared/contexts/modal/modal-context";
 import { TabBarButton } from "@nihongo/core/shared/ui/bottom-tap";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
@@ -38,7 +38,7 @@ import KanaTableChoiceLettersPage from "@/pages/kana/kana-table-choice-letters-p
 import KanaTableListPage from "@/pages/kana/kana-table-list-page/kana-table-list-page";
 import SettingsPage from "@/pages/settings/settings-page";
 
-const withModal = <P extends object>(Component: React.ComponentType<P>) => ({
+const modal = <P extends object>(Component: React.ComponentType<P>) => ({
   screen: (props: P) => (
     <ModalProvider>
       <Component {...props} />
@@ -54,22 +54,24 @@ const withModal = <P extends object>(Component: React.ComponentType<P>) => ({
   } as const,
 });
 
+const tabBar = (props: BottomTabBarProps) => (
+  <TabBarButton
+    {...props}
+    tabs={{
+      [ROUTES.LEARNING_ROOT]: { title: "tabs.learning", icon: GraduationCapIcon },
+      [ROUTES.PRACTICE_ROOT]: { title: "tabs.practice", icon: CardsThreeIcon },
+      [ROUTES.KANA_TABLE_ROOT]: { title: "tabs.kana", icon: SwatchesIcon },
+      [ROUTES.PROFILE_ROOT]: { title: "tabs.profile", icon: UserIcon },
+    }}
+  />
+);
+
 const RootStack = {
   screenOptions: { headerShown: false },
   screens: {
     [ROUTES.HOME]: {
       screen: createBottomTabNavigator({
-        tabBar: (props) => (
-          <TabBarButton
-            {...props}
-            tabs={{
-              [ROUTES.LEARNING_ROOT]: { title: "tabs.learning", icon: GraduationCapIcon },
-              [ROUTES.PRACTICE_ROOT]: { title: "tabs.practice", icon: CardsThreeIcon },
-              [ROUTES.KANA_TABLE_ROOT]: { title: "tabs.kana", icon: SwatchesIcon },
-              [ROUTES.PROFILE_ROOT]: { title: "tabs.profile", icon: UserIcon },
-            }}
-          />
-        ),
+        tabBar,
         screens: {
           [ROUTES.PRACTICE_ROOT]: PracticeWelcomePage,
           [ROUTES.LEARNING_ROOT]: LearningList,
@@ -88,20 +90,20 @@ const RootStack = {
     [ROUTES.LESSON_PAGE]: LessonPage,
     [ROUTES.RESULTS]: EducationResultPage,
 
-    [ROUTES.KANA_INFO]: withModal(KanaLetterPage),
-    [ROUTES.KANA_SELECT]: withModal(KanaTableChoiceLettersPage),
+    [ROUTES.KANA_INFO]: modal(KanaLetterPage),
+    [ROUTES.KANA_SELECT]: modal(KanaTableChoiceLettersPage),
 
-    [ROUTES.PRACTICE_PREFERENCES]: withModal(PracticePreferencesPage),
+    [ROUTES.PRACTICE_PREFERENCES]: modal(PracticePreferencesPage),
 
     // ? pages from @nihongo/core
-    [ROUTES.SETTINGS_LANGUAGE]: withModal(SettingsLanguagePage),
-    [ROUTES.SETTINGS_TRANSLITERATION]: withModal(SettingsTransliterationsPage),
-    [ROUTES.SETTINGS_THEME]: withModal(SettingsThemePage),
-    [ROUTES.SETTINGS_WIDGETS]: withModal(SettingsWidgetsPage),
+    [ROUTES.SETTINGS_LANGUAGE]: modal(SettingsLanguagePage),
+    [ROUTES.SETTINGS_TRANSLITERATION]: modal(SettingsTransliterationsPage),
+    [ROUTES.SETTINGS_THEME]: modal(SettingsThemePage),
+    [ROUTES.SETTINGS_WIDGETS]: modal(SettingsWidgetsPage),
 
-    [ROUTES.PROFILE_EDIT]: withModal(ProfileEditPage),
-    [ROUTES.PROFILE_EDIT_NAME]: withModal(ProfileChangeNamePage),
-    [ROUTES.PROFILE_EDIT_PASSWORD]: withModal(ProfileChangePasswordPage),
+    [ROUTES.PROFILE_EDIT]: modal(ProfileEditPage),
+    [ROUTES.PROFILE_EDIT_NAME]: modal(ProfileChangeNamePage),
+    [ROUTES.PROFILE_EDIT_PASSWORD]: modal(ProfileChangePasswordPage),
   },
 };
 
