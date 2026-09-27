@@ -6,7 +6,7 @@ import {
 } from "@/pages/education/practice/education-practice/lib/types/questions";
 import { Kana, PracticeType } from "@/shared/constants/kana";
 import { Word } from "@/shared/data/words";
-import { getRandomWords } from "@/shared/helpers/words";
+import { shuffleArray } from "@/shared/helpers/letters";
 
 interface questionGenerateMatchingPairsProps {
   katakanaWords: Word[];
@@ -19,6 +19,8 @@ interface questionGenerateMatchingPairsProps {
   transliterations: number;
 }
 
+const PAIRS_COUNT = 3;
+
 const questionGenerateMatchingPairs = ({
   katakanaWords,
   hiraganaWords,
@@ -26,16 +28,16 @@ const questionGenerateMatchingPairs = ({
   lang,
   transliterations,
 }: questionGenerateMatchingPairsProps): Maybe<PracticeQuestion[PracticeType.MatchingPairs]> => {
-  const words = kana === Kana.Hiragana ? hiraganaWords : katakanaWords;
+  const preferred = kana === Kana.Hiragana ? hiraganaWords : katakanaWords;
+  const other = kana === Kana.Hiragana ? katakanaWords : hiraganaWords;
+  const otherKana = kana === Kana.Hiragana ? Kana.Katakana : Kana.Hiragana;
 
-  if (words.length === 0) return null;
+  const questionKana = preferred.length >= PAIRS_COUNT ? kana : otherKana;
+  const words = preferred.length >= PAIRS_COUNT ? preferred : other;
 
-  const word = getRandomWords([], words.flat());
+  if (words.length < PAIRS_COUNT) return null;
 
-  const word1 = getRandomWords([word.kana], words);
-  const word2 = getRandomWords([word.kana, word1.kana], words);
-
-  const kanaElements = [word, word1, word2];
+  const kanaElements = shuffleArray(words).slice(0, PAIRS_COUNT);
 
   const wordsPairs = kanaElements.map((item) => ({
     kana: item.kana,
@@ -45,7 +47,7 @@ const questionGenerateMatchingPairs = ({
 
   return {
     pairs: wordsPairs,
-    questionKana: kana,
+    questionKana,
   };
 };
 

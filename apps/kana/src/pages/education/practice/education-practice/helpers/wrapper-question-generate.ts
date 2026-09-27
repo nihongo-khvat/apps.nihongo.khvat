@@ -35,20 +35,10 @@ function generateWordsKanaTemplate(
 ): Kana[] {
   const shuffleArray = <T>(arr: T[]): T[] => arr.sort(() => Math.random() - 0.5);
 
-  if (hiragana.length < questionsLength && katakana.length < questionsLength) {
-    return [];
-  }
-
-  if (hiragana.length >= questionsLength && katakana.length >= questionsLength) {
-    return shuffleArray([
-      ...Array(questionsLength / 2).fill(Kana.Hiragana),
-      ...Array(questionsLength / 2).fill(Kana.Katakana),
-    ]);
-  }
-
-  if (hiragana.length >= questionsLength) return Array(questionsLength).fill(Kana.Hiragana);
-
-  return Array(questionsLength).fill(Kana.Katakana);
+  return shuffleArray([
+    ...Array(hiragana.length).fill(Kana.Hiragana),
+    ...Array(katakana.length).fill(Kana.Katakana),
+  ]).slice(0, questionsLength);
 }
 
 function generateKanaTemplate(
@@ -308,7 +298,7 @@ const wrapperQuestionGenerate = ({
         transliterations: transliterations,
       });
 
-      if (question.question) {
+      if (question) {
         addedKanaWords.push(question.word.kana);
         questions.push({ type: mode, [PracticeType.WordBuilding]: question.question });
       }

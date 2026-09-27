@@ -14,6 +14,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KanaSection } from "@/shared/constants/kana";
 import { words, Word } from "@/shared/data/words";
 import { findWordsFromArray } from "@/shared/helpers/word";
+import { mergeWordsByKana } from "@/shared/helpers/words";
+
+const uniqueWords = mergeWordsByKana(words);
 
 export type Selected = {
   base: { katakana: string[]; hiragana: string[] };
@@ -113,8 +116,8 @@ export const KanaProvider = ({ children }: { children: ReactNode }) => {
         .map((id) => lettersTableById[id]?.[type === "katakana" ? "ka" : "hi"]);
 
     return {
-      katakana: findWordsFromArray(words, getLetters("katakana")),
-      hiragana: findWordsFromArray(words, getLetters("hiragana")),
+      katakana: findWordsFromArray(uniqueWords, getLetters("katakana")),
+      hiragana: findWordsFromArray(uniqueWords, getLetters("hiragana")),
     };
   }, [selected]);
 

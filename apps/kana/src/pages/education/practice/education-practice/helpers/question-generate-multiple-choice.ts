@@ -20,6 +20,8 @@ interface GenerateChoiceAnswerProps {
   transliterations: number;
 }
 
+const WRONG_ANSWERS_COUNT = 3;
+
 const questionGenerateMultipleChoice = ({
   addedKanaWords,
   katakanaWords,
@@ -30,25 +32,25 @@ const questionGenerateMultipleChoice = ({
   const words = kana === KanaAlphabet.Hiragana ? hiraganaWords : katakanaWords;
 
   const word = getRandomWords(addedKanaWords, words);
+  if (!word) return null;
 
-  if (words.length === 0) return null;
+  const toTitle = (item: Word) => transliterateByIndex(item.kana, transliterations);
 
-  const wordSecond = getRandomWords([word.kana], words);
-  const wordThird = getRandomWords([word.kana, wordSecond.kana], words);
-  const wordFourth = getRandomWords([word.kana, wordSecond.kana, wordThird.kana], words);
+  const correctTitle = toTitle(word);
+  const wrongTitles = [...new Set(shuffleArray([...hiraganaWords, ...katakanaWords]).map(toTitle))]
+    .filter((title) => title !== correctTitle)
+    .slice(0, WRONG_ANSWERS_COUNT);
 
-  const question: PracticeQuestion[PracticeType.MultipleChoice] = {
-    word: word,
+  if (wrongTitles.length < WRONG_ANSWERS_COUNT) return null;
+
+  return {
+    word,
     kana: kana === KanaAlphabet.Hiragana ? Kana.Hiragana : Kana.Katakana,
     answers: shuffleArray([
-      { title: transliterateByIndex(word.kana, transliterations), isTrue: true },
-      { title: transliterateByIndex(wordSecond.kana, transliterations), isTrue: false },
-      { title: transliterateByIndex(wordThird.kana, transliterations), isTrue: false },
-      { title: transliterateByIndex(wordFourth.kana, transliterations), isTrue: false },
+      { title: correctTitle, isTrue: true },
+      ...wrongTitles.map((title) => ({ title, isTrue: false })),
     ]),
   };
-
-  return question;
 };
 
 export default questionGenerateMultipleChoice;

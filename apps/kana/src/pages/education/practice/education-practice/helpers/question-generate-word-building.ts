@@ -28,18 +28,19 @@ const questionGenerateWordBuilding = ({
   kana,
   lang,
   transliterations,
-}: questionGenerateWordBuildingProps): {
-  question: Maybe<PracticeQuestion[PracticeType.WordBuilding]>;
+}: questionGenerateWordBuildingProps): Maybe<{
+  question: PracticeQuestion[PracticeType.WordBuilding];
   word: Word;
-} => {
+}> => {
   const words = kana === Kana.Hiragana ? hiraganaWords : katakanaWords;
 
   const word = getRandomWords(addedKanaWords, words);
+  if (!word) return null;
 
   const question: PracticeQuestion[PracticeType.WordBuilding] = {
     title: transliterateByIndex(word.kana, transliterations),
     subtitle: word[lang],
-    sequence: word?.kana.split(""),
+    sequence: word.kana.split(""),
     kana: kana,
   };
 
