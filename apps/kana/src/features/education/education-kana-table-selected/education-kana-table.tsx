@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { useHaptic } from "@nihongo/core/shared/contexts/haptic/haptic-context";
 import { useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import {
@@ -295,6 +296,9 @@ export default EducationKanaTableSelected;
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
+    maxWidth: TABLET_WIDTH + 32,
+    alignSelf: "center",
     paddingLeft: 16,
     paddingRight: 16,
     marginTop: 16,

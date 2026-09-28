@@ -4,6 +4,7 @@ import PracticeHeatmap from "@nihongo/core/entities/profile/practice-heatmap";
 import ProfileItem from "@nihongo/core/entities/profile/profile-item/profile-item";
 import SocialMediaProfile from "@nihongo/core/entities/profile/social-media-profile/social-media-profile";
 import { PROFILE_ROUTES, ProfileParamList } from "@nihongo/core/pages/profile/routes";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { IS_WELCOME_PAGE } from "@nihongo/core/shared/constants/storageKeys";
 import { useHaptic } from "@nihongo/core/shared/contexts/haptic/haptic-context";
 import { useResetApp } from "@nihongo/core/shared/contexts/reset-context/reset-context";
@@ -125,7 +126,7 @@ const ProfilePage: React.FC = () => {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ gap: 16 }}
+        contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         style={styles.content}
       >
@@ -155,6 +156,12 @@ const makeStyles = (colors: ColorsType) =>
     content: {
       paddingTop: 16,
       paddingHorizontal: 16,
+    },
+    contentContainer: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
+      gap: 16,
     },
   });
 

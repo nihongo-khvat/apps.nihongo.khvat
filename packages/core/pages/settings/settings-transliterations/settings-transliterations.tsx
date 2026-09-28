@@ -1,6 +1,7 @@
 import React from "react";
 
 import LanguageItem from "@nihongo/core/entities/setting/language/language-item";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import {
   Transliterations,
@@ -83,36 +84,38 @@ const SettingsTransliterationsPage: React.FC = () => {
           }}
         />
 
-        <Text style={styles.title}>{t("transliterationSystems.latin")}</Text>
-        <View style={styles.list}>
-          {transliterationSystems.map((item, index) => (
-            <LanguageItem
-              key={item.key}
-              tags={item.tags}
-              transliteration={index}
-              name={item.title}
-              icons={[base[2][1], dakuon[2][2]]}
-              onPress={() => select(item.key)}
-              active={selected === item.key}
-            />
-          ))}
-        </View>
+        <View style={styles.content}>
+          <Text style={styles.title}>{t("transliterationSystems.latin")}</Text>
+          <View style={styles.list}>
+            {transliterationSystems.map((item, index) => (
+              <LanguageItem
+                key={item.key}
+                tags={item.tags}
+                transliteration={index}
+                name={item.title}
+                icons={[base[2][1], dakuon[2][2]]}
+                onPress={() => select(item.key)}
+                active={selected === item.key}
+              />
+            ))}
+          </View>
 
-        <Text style={[styles.title, styles.title_bottom]}>
-          {t("transliterationSystems.cyrillic")}
-        </Text>
-        <View style={styles.list}>
-          {cyrillicTransliterationSystems.map((item, index) => (
-            <LanguageItem
-              key={item.key}
-              tags={item.tags}
-              transliteration={3 + index}
-              name={item.title}
-              icons={[base[2][1], dakuon[2][2]]}
-              onPress={() => select(item.key)}
-              active={selected === item.key}
-            />
-          ))}
+          <Text style={[styles.title, styles.title_bottom]}>
+            {t("transliterationSystems.cyrillic")}
+          </Text>
+          <View style={styles.list}>
+            {cyrillicTransliterationSystems.map((item, index) => (
+              <LanguageItem
+                key={item.key}
+                tags={item.tags}
+                transliteration={3 + index}
+                name={item.title}
+                icons={[base[2][1], dakuon[2][2]]}
+                onPress={() => select(item.key)}
+                active={selected === item.key}
+              />
+            ))}
+          </View>
         </View>
       </View>
     </ModelContainer>
@@ -121,6 +124,12 @@ const SettingsTransliterationsPage: React.FC = () => {
 
 const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
+    content: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH + 32,
+      alignSelf: "center",
+      paddingHorizontal: 16,
+    },
     title: {
       color: colors.TextPrimary,
 
@@ -128,7 +137,6 @@ const makeStyles = (colors: ColorsType) =>
 
       marginTop: 16,
       marginBottom: 16,
-      marginHorizontal: 16,
     },
     title_bottom: {
       marginTop: 32,
@@ -139,7 +147,6 @@ const makeStyles = (colors: ColorsType) =>
       justifyContent: "space-between",
     },
     list: {
-      marginHorizontal: 16,
       gap: 8,
       flexDirection: "column",
       overflow: "hidden",

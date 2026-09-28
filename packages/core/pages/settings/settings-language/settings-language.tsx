@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 
 import { languageList, ShortLanguage } from "@nihongo/core/shared/constants/language";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import useSetLanguage from "@nihongo/core/shared/lib/i18n/hooks/useSetLanguage";
 import usePreviewSetting from "@nihongo/core/shared/lib/settings/usePreviewSetting";
@@ -63,6 +64,7 @@ const SettingsLanguagePage: React.FC = () => {
   const { colors } = useThemeContext();
 
   const insets = useSafeAreaInsets();
+  const styles = makeStyles(colors);
 
   const { set } = useSetLanguage();
 
@@ -105,7 +107,7 @@ const SettingsLanguagePage: React.FC = () => {
           }}
         />
 
-        <View style={{ paddingHorizontal: 16, flex: 1 }}>
+        <View style={styles.content}>
           <FlatList
             style={{ flex: 1 }}
             contentContainerStyle={{ paddingBottom: insets.bottom }}
@@ -131,6 +133,13 @@ const SettingsLanguagePage: React.FC = () => {
 
 const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
+    content: {
+      flex: 1,
+      width: "100%",
+      maxWidth: TABLET_WIDTH + 32,
+      alignSelf: "center",
+      paddingHorizontal: 16,
+    },
     item__active: {
       marginBottom: 8,
       borderRadius: 12,

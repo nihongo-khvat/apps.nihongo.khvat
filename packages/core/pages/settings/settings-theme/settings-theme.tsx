@@ -1,6 +1,7 @@
 import React from "react";
 
 import ThemeItem, { ThemeType } from "@nihongo/core/entities/setting/theme/theme-item";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { Theme } from "@nihongo/core/shared/constants/theme";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import usePreviewSetting from "@nihongo/core/shared/lib/settings/usePreviewSetting";
@@ -122,30 +123,32 @@ const SettingsThemePage: React.FC = () => {
           }}
         />
 
-        <Text style={styles.title}>{t("settings.theme.installed")}</Text>
-        <View style={styles.list}>
-          <FlatList
-            style={{ flexShrink: 1 }}
-            contentContainerStyle={{ paddingBottom: insets.bottom }}
-            data={themeOptions}
-            extraData={selected}
-            renderItem={({ item, index }) => (
-              <ThemeItem
-                active={selected === item.key}
-                key={item.key}
-                name={item.title}
-                icon={item.icon}
-                author={"ui.taisia"}
-                type={item.type}
-                downloads={0}
-                screenshots={[]}
-                isOpen={false}
-                isLast={index >= themeOptions.length - 1}
-                onPress={() => select(item.key)}
-              />
-            )}
-            keyExtractor={(item) => item.key.toString()}
-          />
+        <View style={styles.content}>
+          <Text style={styles.title}>{t("settings.theme.installed")}</Text>
+          <View style={styles.list}>
+            <FlatList
+              style={{ flexShrink: 1 }}
+              contentContainerStyle={{ paddingBottom: insets.bottom }}
+              data={themeOptions}
+              extraData={selected}
+              renderItem={({ item, index }) => (
+                <ThemeItem
+                  active={selected === item.key}
+                  key={item.key}
+                  name={item.title}
+                  icon={item.icon}
+                  author={"ui.taisia"}
+                  type={item.type}
+                  downloads={0}
+                  screenshots={[]}
+                  isOpen={false}
+                  isLast={index >= themeOptions.length - 1}
+                  onPress={() => select(item.key)}
+                />
+              )}
+              keyExtractor={(item) => item.key.toString()}
+            />
+          </View>
         </View>
       </View>
     </ModelContainer>
@@ -154,17 +157,21 @@ const SettingsThemePage: React.FC = () => {
 
 const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
+    content: {
+      flexShrink: 1,
+      width: "100%",
+      maxWidth: TABLET_WIDTH + 36,
+      alignSelf: "center",
+      paddingHorizontal: 18,
+    },
     title: {
       color: colors.TextPrimary,
 
       ...Typography.H4,
 
-      marginHorizontal: 18,
       marginVertical: 16,
     },
     list: {
-      marginHorizontal: 18,
-
       flexShrink: 1,
       overflow: "hidden",
     },

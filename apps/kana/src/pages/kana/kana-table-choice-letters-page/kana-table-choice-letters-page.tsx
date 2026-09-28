@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 import { isIOS } from "@nihongo/core/shared/constants/platformUtil";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { Typography } from "@nihongo/core/shared/typography";
 import PrimaryButton from "@nihongo/core/shared/ui/buttons/Primary/primary-button";
@@ -76,7 +77,9 @@ const KanaTableChoiceLettersPage: React.FC = () => {
           )}
           renderSectionHeader={({ section: { title } }) => (
             <View style={[styles.nameContainer, { backgroundColor: colors.BgPrimary }]}>
-              <Text style={[Typography.H4, { color: colors.TextPrimary }]}>{title}</Text>
+              <Text style={[Typography.H4, styles.name, { color: colors.TextPrimary }]}>
+                {title}
+              </Text>
             </View>
           )}
         />
@@ -90,7 +93,9 @@ const KanaTableChoiceLettersPage: React.FC = () => {
           renderItem={({ item }) => (
             <React.Suspense fallback={<View />}>
               <View style={[styles.nameContainer]}>
-                <Text style={[Typography.H4, { color: colors.TextPrimary }]}>{item.title}</Text>
+                <Text style={[Typography.H4, styles.name, { color: colors.TextPrimary }]}>
+                  {item.title}
+                </Text>
               </View>
 
               <EducationKanaTableSelected
@@ -162,6 +167,11 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
 
     height: 46,
+  },
+  name: {
+    width: "100%",
+    maxWidth: TABLET_WIDTH,
+    alignSelf: "center",
   },
   lineContainer: {
     width: "100%",
