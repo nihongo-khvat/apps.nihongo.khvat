@@ -15,7 +15,10 @@ export const normalizeCoordinates = (
     });
   });
 
+  const width = maxX - minX || 1;
+  const height = maxY - minY || 1;
+
   return data.map((path) =>
-    path.map((point) => [(point.x - minX) / (maxX - minX), (point.y - minY) / (maxY - minY)]),
+    path.map((point) => [(point.x - minX) / width, (point.y - minY) / height]),
   );
 };

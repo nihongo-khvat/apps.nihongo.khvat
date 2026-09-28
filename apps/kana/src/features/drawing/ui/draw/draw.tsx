@@ -15,9 +15,9 @@ import { CircleIcon, FloppyDiskIcon, ScanIcon, XIcon } from "phosphor-react-nati
 import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import {
+  GestureDetector,
   GestureHandlerRootView,
-  PanGestureHandler,
-  GestureHandlerGestureEvent,
+  usePanGesture,
 } from "react-native-gesture-handler";
 import { Svg, Path } from "react-native-svg";
 
@@ -98,28 +98,37 @@ const Draw: React.FC<DrawProps> = ({
   const isShowLetter = settings.isShowLetter;
   const isShowBorder = settings.isShowBorder;
 
-  const onGestureEvent = (event: GestureHandlerGestureEvent) => {
-    const { x, y } = event.nativeEvent as unknown as { x: number; y: number };
-
-    if (currentPathRef.current.length === 0) {
+  const drawGesture = usePanGesture({
+    minDistance: 0,
+    maxPointers: 1,
+    runOnJS: true,
+    onBegin: ({ x, y }) => {
       currentPathRef.current = [{ x, y }];
-    } else {
-      const newPoint = { x, y };
-      currentPathRef.current = [...currentPathRef.current, newPoint];
-    }
-
-    requestAnimationFrame(() => {
+    },
+    onUpdate: ({ x, y }) => {
+      currentPathRef.current.push({ x, y });
       forceUpdate();
-    });
-  };
-
-  const onHandlerStateChange = (event: GestureHandlerGestureEvent) => {
-    if (event.nativeEvent.state === 5) {
-      pathsRef.current = [...pathsRef.current, currentPathRef.current];
+    },
+    onFinalize: () => {
+      if (currentPathRef.current.length > 1) {
+        pathsRef.current = [...pathsRef.current, currentPathRef.current];
+      }
       currentPathRef.current = [];
       forceUpdate();
-    }
-  };
+    },
+  });
+
+  const renderStroke = (path: DrawingPath, key: string) => (
+    <Path
+      key={key}
+      d={generatePathDAttribute(path)}
+      stroke={colors.BgContrast}
+      fill={colors.transparent}
+      strokeWidth={isCheck ? 6 : strokeWidth}
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    />
+  );
 
   const handleClearStepButtonClick = () => {
     if (currentPathRef.current.length > 0) {
@@ -213,10 +222,7 @@ const Draw: React.FC<DrawProps> = ({
           alignItems: "center",
         }}
       >
-        <PanGestureHandler
-          onGestureEvent={onGestureEvent}
-          onHandlerStateChange={onHandlerStateChange}
-        >
+        <GestureDetector gesture={drawGesture}>
           <View
             style={{
               borderRadius: 24,
@@ -280,28 +286,11 @@ const Draw: React.FC<DrawProps> = ({
             )}
             <Svg height={canvasSize} width={canvasSize}>
               {isShowBorder && <CanvasBorder canvasSize={canvasSize} />}
-              {pathsRef.current.map((path, index) => (
-                <Path
-                  key={`path-${index}`}
-                  d={generatePathDAttribute(path)}
-                  stroke={colors.BgContrast}
-                  fill={colors.transparent}
-                  strokeWidth={isCheck ? 6 : strokeWidth}
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              ))}
-              <Path
-                d={generatePathDAttribute(currentPathRef.current)}
-                stroke={colors.BgContrast}
-                fill={colors.transparent}
-                strokeWidth={isCheck ? 6 : strokeWidth}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
+              {pathsRef.current.map((path, index) => renderStroke(path, `path-${index}`))}
+              {renderStroke(currentPathRef.current, "path-current")}
             </Svg>
           </View>
-        </PanGestureHandler>
+        </GestureDetector>
 
         <View
           style={{
