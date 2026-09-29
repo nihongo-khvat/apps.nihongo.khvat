@@ -20,16 +20,23 @@ export const refreshAccessToken = (): Promise<string | null> => {
       const refresh = await getRefreshToken();
       if (!refresh) return null;
 
-      const res = await apiFetch("/api/v2/auth/refresh", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refresh }),
-      });
+      const res = await apiFetch(
+        "/api/v2/auth/refresh",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: refresh }),
+        },
+        { failover: false },
+      );
 
-      if (!res.ok) {
+      const isRejected = res.status >= 400 && res.status < 500 && res.status !== 429;
+      if (isRejected) {
         await clearTokens();
         return null;
       }
+
+      if (!res.ok) return null;
 
       const data = await res.json();
       await saveTokens(data.access_token, data.refresh_token);
@@ -44,7 +51,7 @@ export const refreshAccessToken = (): Promise<string | null> => {
   return refreshing;
 };
 
-const withAuth = (init: RequestInit, token: string | null): RequestInit => ({
+export const withAuth = (init: RequestInit, token: string | null): RequestInit => ({
   ...init,
   headers: {
     ...(init.headers ?? {}),
@@ -52,13 +59,11 @@ const withAuth = (init: RequestInit, token: string | null): RequestInit => ({
   },
 });
 
-export const authFetch = async (
-  path: string,
-  init: RequestInit = {},
-  options?: ApiFetchOptions,
+export const sendWithTokenRefresh = async (
+  send: (token: string | null) => Promise<Response>,
 ): Promise<Response> => {
   const token = await getAccessToken();
-  const res = await apiFetch(path, withAuth(init, token), options);
+  const res = await send(token);
 
   if (res.status !== 401) return res;
 
@@ -70,11 +75,19 @@ export const authFetch = async (
     return res;
   }
 
-  const newToken = await refreshAccessToken();
+  const current = await getAccessToken();
+  const newToken = current && current !== token ? current : await refreshAccessToken();
   if (!newToken) return res;
 
-  return apiFetch(path, withAuth(init, newToken), options);
+  return send(newToken);
 };
+
+export const authFetch = (
+  path: string,
+  init: RequestInit = {},
+  options?: ApiFetchOptions,
+): Promise<Response> =>
+  sendWithTokenRefresh((token) => apiFetch(path, withAuth(init, token), options));
 
 export const logout = async (): Promise<void> => {
   const refresh = await getRefreshToken();
