@@ -17,12 +17,12 @@ const osakaLightTheme: Colors = {
   BgModal: "#00000080",
   BgAccent: "#DE9B2F",
   BgAccentPressed: "#B47C23",
-  BgSuccess: "#B9CD7B",
-  BgWarning: "#F8DB71",
-  BgWarningPressed: "#EFC734",
-  BgDanger: "#EF929E",
-  BgOrange: "#E4BA75",
-  BgBlue: "#92ACEF",
+  BgSuccess: "#A1C074",
+  BgWarning: "#F5D76C",
+  BgWarningPressed: "#F0CE4F",
+  BgDanger: "#F17C8B",
+  BgOrange: "#F4B16A",
+  BgBlue: "#7899F0",
 
   // Border
   BorderDefault: "#EBE8CA",
@@ -38,10 +38,10 @@ const osakaLightTheme: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#DE9B2F",
   TextAccentPressed: "#B47C23",
-  TextSuccess: "#B9CD7B",
-  TextWarning: "#F8DB71",
-  TextWarningPressed: "#EFC734",
-  TextDanger: "#EF929E",
+  TextSuccess: "#A1C074",
+  TextWarning: "#F5D76C",
+  TextWarningPressed: "#F0CE4F",
+  TextDanger: "#F17C8B",
 
   // system
   primary: "#DE9B2F", // BgAccent

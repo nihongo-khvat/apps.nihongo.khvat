@@ -17,12 +17,12 @@ const blueOceanDarkTheme: Colors = {
   BgModal: "#00000080",
   BgAccent: "#0099E8",
   BgAccentPressed: "#007DBD",
-  BgSuccess: "#3BDD9D",
-  BgWarning: "#F3D74C",
-  BgWarningPressed: "#F8E275",
-  BgDanger: "#D24043",
-  BgOrange: "#E19146",
-  BgBlue: "#0099E8",
+  BgSuccess: "#4CB94C",
+  BgWarning: "#F2D752",
+  BgWarningPressed: "#F5DD64",
+  BgDanger: "#EE595C",
+  BgOrange: "#E6974D",
+  BgBlue: "#55BBEA",
 
   // Border
   BorderDefault: "#242E3A",
@@ -38,10 +38,10 @@ const blueOceanDarkTheme: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#0099E8",
   TextAccentPressed: "#007DBD",
-  TextSuccess: "#3BDD9D",
-  TextWarning: "#F3D74C",
-  TextWarningPressed: "#F8E275",
-  TextDanger: "#D24043",
+  TextSuccess: "#4CB94C",
+  TextWarning: "#F2D752",
+  TextWarningPressed: "#F5DD64",
+  TextDanger: "#EE595C",
 
   // system
   primary: "#0099E8", // BgAccent

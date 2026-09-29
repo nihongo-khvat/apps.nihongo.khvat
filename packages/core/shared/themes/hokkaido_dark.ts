@@ -17,12 +17,12 @@ const hokkaidoDarkTheme: Colors = {
   BgModal: "#00000080",
   BgAccent: "#EA8C5D",
   BgAccentPressed: "#B25020",
-  BgSuccess: "#77C42E",
-  BgWarning: "#F3A92A",
-  BgWarningPressed: "#FCC470",
-  BgDanger: "#CE483B",
-  BgOrange: "#E97237",
-  BgBlue: "#3AB9DE",
+  BgSuccess: "#84BB51",
+  BgWarning: "#EFB34C",
+  BgWarningPressed: "#F6BF6D",
+  BgDanger: "#EF6557",
+  BgOrange: "#EA8C5D",
+  BgBlue: "#52C9EB",
 
   // Border
   BorderDefault: "#27363B",
@@ -38,10 +38,10 @@ const hokkaidoDarkTheme: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#EA8C5D",
   TextAccentPressed: "#B25020",
-  TextSuccess: "#77C42E",
-  TextWarning: "#F3A92A",
-  TextWarningPressed: "#FCC470",
-  TextDanger: "#CE483B",
+  TextSuccess: "#84BB51",
+  TextWarning: "#EFB34C",
+  TextWarningPressed: "#F6BF6D",
+  TextDanger: "#EF6557",
 
   // system
   primary: "#EA8C5D", // BgAccent

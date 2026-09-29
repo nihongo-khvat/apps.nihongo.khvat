@@ -17,12 +17,12 @@ const sakuraLightTheme: Colors = {
   BgModal: "#00000080",
   BgAccent: "#85543F",
   BgAccentPressed: "#5A3628",
-  BgSuccess: "#95AC5A",
-  BgWarning: "#FFDF86",
-  BgWarningPressed: "#FFD358",
-  BgDanger: "#F58587",
-  BgOrange: "#E08C69",
-  BgBlue: "#73BCE9",
+  BgSuccess: "#ABBF76",
+  BgWarning: "#F5D170",
+  BgWarningPressed: "#F1C855",
+  BgDanger: "#F27578",
+  BgOrange: "#F3946C",
+  BgBlue: "#71BFF0",
 
   // Border
   BorderDefault: "#EACBCA",
@@ -38,10 +38,10 @@ const sakuraLightTheme: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#85543F",
   TextAccentPressed: "#5A3628",
-  TextSuccess: "#95AC5A",
-  TextWarning: "#FFDF86",
-  TextWarningPressed: "#FFD358",
-  TextDanger: "#F58587",
+  TextSuccess: "#ABBF76",
+  TextWarning: "#F5D170",
+  TextWarningPressed: "#F1C855",
+  TextDanger: "#F27578",
 
   // system
   primary: "#85543F", // BgAccent

@@ -17,12 +17,12 @@ const blueOceanLightTheme: Colors = {
   BgModal: "#00000080",
   BgAccent: "#55BBEA",
   BgAccentPressed: "#007DBD",
-  BgSuccess: "#6CE6B5",
-  BgWarning: "#F8E275",
-  BgWarningPressed: "#F3D74C",
-  BgDanger: "#E66C6E",
-  BgOrange: "#E6A76C",
-  BgBlue: "#55BBEA",
+  BgSuccess: "#76C076",
+  BgWarning: "#F5DD64",
+  BgWarningPressed: "#F2D752",
+  BgDanger: "#F17375",
+  BgOrange: "#F4AB67",
+  BgBlue: "#78CBF1",
 
   // Border
   BorderDefault: "#D6DFE9",
@@ -38,10 +38,10 @@ const blueOceanLightTheme: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#55BBEA",
   TextAccentPressed: "#007DBD",
-  TextSuccess: "#6CE6B5",
-  TextWarning: "#F8E275",
-  TextWarningPressed: "#F3D74C",
-  TextDanger: "#E66C6E",
+  TextSuccess: "#76C076",
+  TextWarning: "#F5DD64",
+  TextWarningPressed: "#F2D752",
+  TextDanger: "#F17375",
 
   // system
   primary: "#55BBEA", // BgAccent

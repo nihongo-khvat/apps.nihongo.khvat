@@ -17,12 +17,12 @@ const jiraiKeiDark: Colors = {
   BgModal: "#00000080",
   BgAccent: "#A38BAD",
   BgAccentPressed: "#4E4153",
-  BgSuccess: "#83C5AF",
-  BgWarning: "#F2C85A",
-  BgWarningPressed: "#EECF7F",
-  BgDanger: "#F18686",
-  BgOrange: "#F3AF73",
-  BgBlue: "#7CA3F1",
+  BgSuccess: "#66BC74",
+  BgWarning: "#F2CF73",
+  BgWarningPressed: "#F2D383",
+  BgDanger: "#EF8080",
+  BgOrange: "#ECB17E",
+  BgBlue: "#80A5EF",
 
   // Border
   BorderDefault: "#3A3538",
@@ -38,10 +38,10 @@ const jiraiKeiDark: Colors = {
   TextWhite: "#FFFFFF",
   TextAccent: "#A38BAD",
   TextAccentPressed: "#4E4153",
-  TextSuccess: "#83C5AF",
-  TextWarning: "#F2C85A",
-  TextWarningPressed: "#EECF7F",
-  TextDanger: "#F18686",
+  TextSuccess: "#66BC74",
+  TextWarning: "#F2CF73",
+  TextWarningPressed: "#F2D383",
+  TextDanger: "#EF8080",
 
   // system
   primary: "#A38BAD", // BgAccent
