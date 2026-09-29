@@ -1,43 +1,54 @@
-const osakaDarkTheme = {
-  BgPrimary: "#131311",
-  BgSecondary: "#2A2A24",
-  BgGray: "#B3AE7B",
-  BgLightGray: "#43442E",
+import { darkTheme } from "./dark";
+
+type Colors = typeof darkTheme;
+
+const osakaDarkTheme: Colors = {
+  // Background
+  BgPrimary: "#1F1F1B",
+  BgSecondary: "#2C2C26",
+  BgLightGray: "#3A3B28",
+  BgGray: "#BBB681",
   BgDarkGray: "#EBE8CA",
-  BgDisabled: "#8A865D",
+  BgDisabled: "#76724F",
   BgContrast: "#FFFFFF",
   BgContrastPressed: "#EBE8CA",
-  BgContrastSecondary: "#F9F8F4",
+  BgContrastSecondary: "#F5F4EE",
   BgWhite: "#FFFFFF",
+  BgModal: "#00000080",
   BgAccent: "#E0AA53",
   BgAccentPressed: "#B47C23",
   BgSuccess: "#9FC333",
   BgWarning: "#EFC734",
+  BgWarningPressed: "#F8DB71",
   BgDanger: "#D35263",
-  BgModal: "#13131180",
+  BgOrange: "#DE9B2F",
+  BgBlue: "#4877ED",
 
-  BorderDefault: "#43442E",
+  // Border
+  BorderDefault: "#3A3B28",
   BorderContrast: "#EBE8CA",
-  // BorderAccent: "#E0AA53",
 
+  // Text
   TextPrimary: "#FFFFFF",
   TextPrimaryPressed: "#EBE8CA",
-  TextSecondary: "#B3AE7B",
-  TextSecondaryPressed: "#8A865D",
-  TextDisabled: "#8A865D",
-  TextContrast: "#131311",
+  TextSecondary: "#BBB681",
+  TextSecondaryPressed: "#76724F",
+  TextDisabled: "#76724F",
+  TextContrast: "#1F1F1B",
   TextWhite: "#FFFFFF",
   TextAccent: "#E0AA53",
+  TextAccentPressed: "#B47C23",
   TextSuccess: "#9FC333",
-  // TextWarning: "#EFC734",
+  TextWarning: "#EFC734",
+  TextWarningPressed: "#F8DB71",
   TextDanger: "#D35263",
 
   // system
   primary: "#E0AA53", // BgAccent
-  background: "#131311", // BgPrimary
-  card: "#131311", // BgPrimary
+  background: "#1F1F1B", // BgPrimary
+  card: "#1F1F1B", // BgPrimary
   text: "#FFFFFF", // TextPrimary
-  border: "#43442E", // BorderDefault
+  border: "#3A3B28", // BorderDefault
   notification: "#FFFFFF", // BgContrast
 
   // transparent

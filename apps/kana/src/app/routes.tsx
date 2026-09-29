@@ -19,8 +19,12 @@ import WelcomePage from "@nihongo/core/pages/welcome/welcome";
 import { isAndroid } from "@nihongo/core/shared/constants/platformUtil";
 import { ModalProvider } from "@nihongo/core/shared/contexts/modal/modal-context";
 import { TabBarButton } from "@nihongo/core/shared/ui/bottom-tap";
-import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStaticNavigation } from "@react-navigation/native";
+import {
+  BottomTabBarProps,
+  BottomTabTypeBag,
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
+import { createStaticNavigation, StaticConfig } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
 import { CardsThreeIcon, GraduationCapIcon, SwatchesIcon, UserIcon } from "phosphor-react-native";
@@ -38,6 +42,8 @@ import KanaTableChoiceLettersPage from "@/pages/kana/kana-table-choice-letters-p
 import KanaTableListPage from "@/pages/kana/kana-table-list-page/kana-table-list-page";
 import SettingsPage from "@/pages/settings/settings-page";
 
+const screenOptions = { headerShown: false };
+
 const modal = <P extends object>(Component: React.ComponentType<P>) => ({
   screen: (props: P) => (
     <ModalProvider>
@@ -50,7 +56,7 @@ const modal = <P extends object>(Component: React.ComponentType<P>) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(isAndroid && ({ ...TransitionPresets.ModalPresentationIOS } as any)),
     gestureEnabled: true,
-    headerShown: false,
+    ...screenOptions,
   } as const,
 });
 
@@ -66,22 +72,28 @@ const tabBar = (props: BottomTabBarProps) => (
   />
 );
 
+type TabScreens = NonNullable<StaticConfig<BottomTabTypeBag>["screens"]>;
+
+const tabNavigator = (screens: TabScreens) => {
+  return {
+    screen: createBottomTabNavigator({
+      tabBar,
+      screens,
+      screenOptions,
+    }),
+    options: screenOptions,
+  };
+};
+
 const RootStack = {
-  screenOptions: { headerShown: false },
+  screenOptions,
   screens: {
-    [ROUTES.HOME]: {
-      screen: createBottomTabNavigator({
-        tabBar,
-        screens: {
-          [ROUTES.PRACTICE_ROOT]: PracticeWelcomePage,
-          [ROUTES.LEARNING_ROOT]: LearningList,
-          [ROUTES.KANA_TABLE_ROOT]: KanaTableListPage,
-          [ROUTES.PROFILE_ROOT]: ProfilePage,
-        },
-        screenOptions: { headerShown: false },
-      }),
-      options: { headerShown: false },
-    },
+    [ROUTES.HOME]: tabNavigator({
+      [ROUTES.PRACTICE_ROOT]: PracticeWelcomePage,
+      [ROUTES.LEARNING_ROOT]: LearningList,
+      [ROUTES.KANA_TABLE_ROOT]: KanaTableListPage,
+      [ROUTES.PROFILE_ROOT]: ProfilePage,
+    }),
 
     [ROUTES.SETTINGS_ROOT]: SettingsPage,
 
@@ -108,7 +120,7 @@ const RootStack = {
 };
 
 const AuthStack = {
-  screenOptions: { headerShown: false },
+  screenOptions,
   screens: {
     [ROUTES.WELCOME]: WelcomePage,
     [ROUTES.AUTH_PREVIEW]: LoginPage,

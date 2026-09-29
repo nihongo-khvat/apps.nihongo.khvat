@@ -1,35 +1,46 @@
-const sakuraLightTheme = {
+import { darkTheme } from "./dark";
+
+type Colors = typeof darkTheme;
+
+const sakuraLightTheme: Colors = {
+  // Background
   BgPrimary: "#FFFFFF",
-  BgSecondary: "#FDF6F6",
-  BgGray: "#8B5F5D",
-  BgLightGray: "#E7C8C7",
-  BgDarkGray: "#4D3433",
-  BgDisabled: "#A98786",
+  BgSecondary: "#F5EDED",
+  BgLightGray: "#EACBCA",
+  BgGray: "#76504F",
+  BgDarkGray: "#392626",
+  BgDisabled: "#BA9695",
   BgContrast: "#2D2424",
-  BgContrastPressed: "#140F0F",
-  BgContrastSecondary: "#140F0F",
+  BgContrastPressed: "#1F1717",
+  BgContrastSecondary: "#1F1717",
   BgWhite: "#FFFFFF",
+  BgModal: "#00000080",
   BgAccent: "#85543F",
   BgAccentPressed: "#5A3628",
   BgSuccess: "#95AC5A",
   BgWarning: "#FFDF86",
+  BgWarningPressed: "#FFD358",
   BgDanger: "#F58587",
-  BgModal: "#140F0F80",
+  BgOrange: "#E08C69",
+  BgBlue: "#73BCE9",
 
-  BorderDefault: "#E7C8C7",
-  BorderContrast: "#4D3433",
-  // BorderAccent: "#85543F",
+  // Border
+  BorderDefault: "#EACBCA",
+  BorderContrast: "#392626",
 
+  // Text
   TextPrimary: "#2D2424",
-  TextPrimaryPressed: "#140F0F",
-  TextSecondary: "#8B5F5D",
-  TextSecondaryPressed: "#4D3433",
-  TextDisabled: "#A98786",
+  TextPrimaryPressed: "#1F1717",
+  TextSecondary: "#76504F",
+  TextSecondaryPressed: "#392626",
+  TextDisabled: "#BA9695",
   TextContrast: "#FFFFFF",
   TextWhite: "#FFFFFF",
   TextAccent: "#85543F",
+  TextAccentPressed: "#5A3628",
   TextSuccess: "#95AC5A",
-  // TextWarning: "#FFDF86",
+  TextWarning: "#FFDF86",
+  TextWarningPressed: "#FFD358",
   TextDanger: "#F58587",
 
   // system
@@ -37,7 +48,7 @@ const sakuraLightTheme = {
   background: "#FFFFFF", // BgPrimary
   card: "#FFFFFF", // BgPrimary
   text: "#2D2424", // TextPrimary
-  border: "#E7C8C7", // BorderDefault
+  border: "#EACBCA", // BorderDefault
   notification: "#2D2424", // BgContrast
 
   // transparent

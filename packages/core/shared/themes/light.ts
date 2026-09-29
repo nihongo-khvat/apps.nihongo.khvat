@@ -6,20 +6,23 @@ const lightTheme: Colors = {
   // Background
   BgPrimary: "#FFFFFF",
   BgSecondary: "#F6F6F6",
-  BgDisabled: "#BBBBBB",
-  BgWhite: "#FFFFFF",
-  BgGray: "#757575",
   BgLightGray: "#ECECEC",
+  BgGray: "#757575",
   BgDarkGray: "#363636",
+  BgDisabled: "#BBBBBB",
   BgContrast: "#2A2A2A",
-  BgContrastSecondary: "#1E1E1E",
   BgContrastPressed: "#1E1E1E",
+  BgContrastSecondary: "#1E1E1E",
+  BgWhite: "#FFFFFF",
+  BgModal: "#00000080",
   BgAccent: "#9A7861",
   BgAccentPressed: "#856753",
   BgSuccess: "#7ABC71",
-  BgWarning: "#F6BF6C",
+  BgWarning: "#F6CF6C",
+  BgWarningPressed: "#F2C450",
   BgDanger: "#F4817D",
-  BgModal: "#1E1E1E80",
+  BgOrange: "#F6AD6E",
+  BgBlue: "#7DA5F4",
 
   // Border
   BorderDefault: "#ECECEC",
@@ -27,14 +30,17 @@ const lightTheme: Colors = {
 
   // Text
   TextPrimary: "#2A2A2A",
-  TextPrimaryPressed: "#757575",
+  TextPrimaryPressed: "#1E1E1E",
   TextSecondary: "#757575",
   TextSecondaryPressed: "#363636",
   TextDisabled: "#BBBBBB",
   TextContrast: "#FFFFFF",
   TextWhite: "#FFFFFF",
   TextAccent: "#9A7861",
+  TextAccentPressed: "#856753",
   TextSuccess: "#7ABC71",
+  TextWarning: "#F6CF6C",
+  TextWarningPressed: "#F2C450",
   TextDanger: "#F4817D",
 
   // system
@@ -42,7 +48,7 @@ const lightTheme: Colors = {
   background: "#FFFFFF", // BgPrimary
   card: "#FFFFFF", // BgPrimary
   text: "#2A2A2A", // TextPrimary
-  border: "#E2E2E2", // BorderDefault
+  border: "#ECECEC", // BorderDefault
   notification: "#2A2A2A", // BgContrast
 
   // transparent

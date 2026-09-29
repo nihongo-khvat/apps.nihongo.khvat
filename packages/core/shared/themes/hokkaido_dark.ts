@@ -1,43 +1,54 @@
-const hokkaidoDarkTheme = {
-  BgPrimary: "#0C1012",
-  BgSecondary: "#182023",
-  BgGray: "#7AA6B3",
-  BgLightGray: "#2A3A3F",
-  BgDarkGray: "#CDE6ED",
-  BgDisabled: "#56757E",
+import { darkTheme } from "./dark";
+
+type Colors = typeof darkTheme;
+
+const hokkaidoDarkTheme: Colors = {
+  // Background
+  BgPrimary: "#141B1E",
+  BgSecondary: "#1F292D",
+  BgLightGray: "#27363B",
+  BgGray: "#82ADBA",
+  BgDarkGray: "#CBE3EA",
+  BgDisabled: "#506D75",
   BgContrast: "#FFFFFF",
-  BgContrastPressed: "#CDE6ED",
-  BgContrastSecondary: "#F5F9FA",
+  BgContrastPressed: "#CBE3EA",
+  BgContrastSecondary: "#EDF3F4",
   BgWhite: "#FFFFFF",
+  BgModal: "#00000080",
   BgAccent: "#EA8C5D",
   BgAccentPressed: "#B25020",
-  BgSuccess: "#60BA53",
+  BgSuccess: "#77C42E",
   BgWarning: "#F3A92A",
+  BgWarningPressed: "#FCC470",
   BgDanger: "#CE483B",
-  BgModal: "#0C101280",
+  BgOrange: "#E97237",
+  BgBlue: "#3AB9DE",
 
-  BorderDefault: "#2A3A3F",
-  BorderContrast: "#CDE6ED",
-  // BorderAccent: "#EA8C5D",
+  // Border
+  BorderDefault: "#27363B",
+  BorderContrast: "#CBE3EA",
 
+  // Text
   TextPrimary: "#FFFFFF",
-  TextPrimaryPressed: "#CDE6ED",
-  TextSecondary: "#7AA6B3",
-  TextSecondaryPressed: "#56757E",
-  TextDisabled: "#56757E",
-  TextContrast: "#0C1012",
+  TextPrimaryPressed: "#CBE3EA",
+  TextSecondary: "#82ADBA",
+  TextSecondaryPressed: "#506D75",
+  TextDisabled: "#506D75",
+  TextContrast: "#141B1E",
   TextWhite: "#FFFFFF",
   TextAccent: "#EA8C5D",
-  TextSuccess: "#60BA53",
-  // TextWarning: "#F3A92A",
+  TextAccentPressed: "#B25020",
+  TextSuccess: "#77C42E",
+  TextWarning: "#F3A92A",
+  TextWarningPressed: "#FCC470",
   TextDanger: "#CE483B",
 
   // system
   primary: "#EA8C5D", // BgAccent
-  background: "#0C1012", // BgPrimary
-  card: "#0C1012", // BgPrimary
+  background: "#141B1E", // BgPrimary
+  card: "#141B1E", // BgPrimary
   text: "#FFFFFF", // TextPrimary
-  border: "#2A3A3F", // BorderDefault
+  border: "#27363B", // BorderDefault
   notification: "#FFFFFF", // BgContrast
 
   // transparent
