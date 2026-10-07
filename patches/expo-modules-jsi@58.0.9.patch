@@ -1,8 +1,7 @@
 diff --git a/apple/scripts/build-xcframework.sh b/apple/scripts/build-xcframework.sh
-index 7d74514eeb4593147338544a1bb77daf6eb31dd0..57a6a34a3248a9f4ba697a0fb14afbd6341f6c52 100755
 --- a/apple/scripts/build-xcframework.sh
 +++ b/apple/scripts/build-xcframework.sh
-@@ -216,7 +216,6 @@ build_slice() {
+@@ -228,7 +228,6 @@
      -destination "generic/platform=${destination}" \
      -derivedDataPath "$DERIVED_DATA_PATH" \
      -configuration "$CONFIGURATION" \

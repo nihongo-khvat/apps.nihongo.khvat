@@ -114,12 +114,6 @@ const config = {
     ],
     ["react-native-app-auth", appAuthProps],
   ],
-  runtimeVersion: {
-    policy: "appVersion",
-  },
-  updates: {
-    url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID}`,
-  },
 };
 
 export default config;
