@@ -151,11 +151,15 @@ const ChineseCN = {
 
     title: "练习完成",
     score: "得分",
+    percent: "正确率",
 
     sec: "秒",
     min: "分",
+    errors_one: "{{count}} 个错误",
+    errors_other: "{{count}} 个错误",
 
     question: "题",
+    questionNumber: "第{{number}}题",
 
     done: "完成",
 

@@ -1,5 +1,4 @@
 import { ILetter } from "@nihongo/core/shared/data/lettersTable";
-import { TFunction } from "i18next";
 
 import { PracticeQuestion, PracticeUserSelect, UserSelectByType } from "../lib/types/questions";
 
@@ -8,24 +7,28 @@ import { Kana, PracticeType } from "@/shared/constants/kana";
 interface FormatResultAnswerProps {
   question: PracticeQuestion;
   userSelect: PracticeUserSelect | null;
-  t: TFunction;
   transliterations: number;
 }
 
-export type ResultUserLine = { text: string; isCorrect: boolean };
+export type ResultSegment = { text: string; isCorrect: boolean };
+
+// * «вопрос → ответ»; ответ разбит на сегменты, чтобы подсветить ошибочные символы
+export type ResultLine = { question: string; answer: ResultSegment[]; isCorrect: boolean };
 
 export interface ResultAnswerView {
   question: PracticeQuestion | null;
 
-  lines: string[];
-  userLines: ResultUserLine[];
-  subtitle: string;
+  // * заголовок карточек с вариантами ответа и рисования
+  title: string;
+  // * строки карточек с подсчётом ошибок (пары, сборка слова, ввод)
+  lines: ResultLine[];
+  errors: number;
 }
 
-const letterText = (letter: ILetter, kana: Kana, transliterations: number): string => {
+export const letterText = (letter: ILetter, kana: Kana, transliterations: number): string => {
   if (kana === Kana.Hiragana) return letter.hi;
   if (kana === Kana.Katakana) return letter.ka;
-  return letter.transliterations[transliterations];
+  return letter.transliterations[transliterations].toUpperCase();
 };
 
 const selectOf = <Type extends PracticeType>(
@@ -37,152 +40,94 @@ const selectOf = <Type extends PracticeType>(
   return userSelect.value as UserSelectByType[Type];
 };
 
+// * посимвольное сравнение: лишние и недостающие символы тоже считаются ошибками
+const compareSymbols = (answer: string[], correct: string[]) => {
+  const segments = answer.map((text, index) => ({
+    text,
+    isCorrect: text.toLowerCase() === correct[index]?.toLowerCase(),
+  }));
+  const matches = segments.filter((segment) => segment.isCorrect).length;
+
+  return { segments, errors: Math.max(answer.length, correct.length) - matches };
+};
+
 const formatResultAnswer = ({
   question,
   userSelect,
-  t,
   transliterations,
 }: FormatResultAnswerProps): ResultAnswerView => {
-  const typeLabel = t(`practice.modes.${question.type}.title`);
-
-  const kanaLabel = (...kanas: Kana[]): string =>
-    [...new Set(kanas.filter((kana) => kana !== Kana.Romaji))]
-      .map((kana) => t(`kana.${kana.toLowerCase()}`))
-      .join(" & ");
-
-  const subtitle = (kana: string) => `${kana} / ${typeLabel}`;
+  const empty = { title: "", lines: [], errors: 0 };
 
   switch (question.type) {
     case PracticeType.Testing: {
       const data = question[PracticeType.Testing]!;
-      const from = letterText(data.question, data.questionKana, transliterations);
-      const to = letterText(data.question, data.answersKana, transliterations);
-
-      const picked = selectOf(userSelect, PracticeType.Testing);
 
       return {
-        question: {
-          type: PracticeType.Testing,
-
-          [PracticeType.Testing]: data,
-        },
-
-        lines: [`${from} → ${to}`],
-        userLines: picked
-          ? [
-              {
-                text: `${from} → ${letterText(picked, data.answersKana, transliterations)}`,
-                isCorrect: picked.id === data.question.id,
-              },
-            ]
-          : [],
-        subtitle: subtitle(kanaLabel(data.questionKana, data.answersKana)),
+        ...empty,
+        question: { type: PracticeType.Testing, [PracticeType.Testing]: data },
+        title: letterText(data.question, data.questionKana, transliterations),
       };
     }
 
     case PracticeType.Drawing: {
       const data = question[PracticeType.Drawing]!;
+
       return {
-        question: {
-          type: PracticeType.Drawing,
-
-          [PracticeType.Drawing]: data,
-        },
-
-        lines: [letterText(data.question, data.questionKana, transliterations)],
-        userLines: [],
-        subtitle: subtitle(kanaLabel(data.questionKana)),
+        ...empty,
+        question: { type: PracticeType.Drawing, [PracticeType.Drawing]: data },
+        title: letterText(data.question, Kana.Romaji, transliterations),
       };
     }
 
     case PracticeType.Listening: {
       const data = question[PracticeType.Listening]!;
-      const from = letterText(data.question, Kana.Romaji, transliterations);
-      const to = letterText(data.question, data.answersKana, transliterations);
-      const picked = selectOf(userSelect, PracticeType.Listening);
 
       return {
-        question: {
-          type: PracticeType.Listening,
-
-          [PracticeType.Listening]: data,
-        },
-
-        lines: [`${from} → ${to}`],
-        userLines: picked
-          ? [
-              {
-                text: `${from} → ${letterText(picked, data.answersKana, transliterations)}`,
-                isCorrect: picked.id === data.question.id,
-              },
-            ]
-          : [],
-        subtitle: subtitle(kanaLabel(data.answersKana)),
+        ...empty,
+        question: { type: PracticeType.Listening, [PracticeType.Listening]: data },
+        title: letterText(data.question, Kana.Romaji, transliterations),
       };
     }
 
     case PracticeType.MultipleChoice: {
       const data = question[PracticeType.MultipleChoice]!;
-      const correct = data.answers.find((answer) => answer.isTrue)?.title ?? "";
-      const picked = selectOf(userSelect, PracticeType.MultipleChoice);
 
       return {
-        question: {
-          type: PracticeType.MultipleChoice,
-
-          [PracticeType.MultipleChoice]: data,
-        },
-
-        lines: [`${data.word.kana} → ${correct}`],
-        userLines: picked
-          ? [{ text: `${data.word.kana} → ${picked}`, isCorrect: picked === correct }]
-          : [],
-        subtitle: subtitle(kanaLabel(data.kana)),
+        ...empty,
+        question: { type: PracticeType.MultipleChoice, [PracticeType.MultipleChoice]: data },
+        title: data.word.kana,
       };
     }
 
     case PracticeType.MatchingPairs: {
       const data = question[PracticeType.MatchingPairs]!;
-      const attempts = selectOf(userSelect, PracticeType.MatchingPairs);
+      const attempts = selectOf(userSelect, PracticeType.MatchingPairs) ?? [];
 
       return {
-        question: {
-          type: PracticeType.MatchingPairs,
-
-          [PracticeType.MatchingPairs]: data,
-        },
-
-        lines: data.pairs.map((pair) => `${pair.kana} → ${pair.transliteration}`),
-        userLines: (attempts ?? []).map((attempt) => ({
-          text: `${attempt.question} → ${attempt.answer}`,
+        ...empty,
+        question: { type: PracticeType.MatchingPairs, [PracticeType.MatchingPairs]: data },
+        lines: attempts.map((attempt) => ({
+          question: attempt.question,
+          answer: [{ text: attempt.answer, isCorrect: attempt.isCorrect }],
           isCorrect: attempt.isCorrect,
         })),
-        subtitle: subtitle(kanaLabel(data.questionKana)),
+        errors: attempts.filter((attempt) => !attempt.isCorrect).length,
       };
     }
 
     case PracticeType.WordBuilding: {
       const data = question[PracticeType.WordBuilding]!;
-      const picked = selectOf(userSelect, PracticeType.WordBuilding);
-      const correctWord = data.sequence.join("");
+      const picked = selectOf(userSelect, PracticeType.WordBuilding) ?? [];
+      const { segments, errors } = compareSymbols(picked, data.sequence);
 
       return {
-        question: {
-          type: PracticeType.WordBuilding,
-
-          [PracticeType.WordBuilding]: data,
-        },
-
-        lines: [`${data.title} → ${correctWord}`],
-        userLines: picked
-          ? [
-              {
-                text: `${data.title} → ${picked.join("")}`,
-                isCorrect: picked.join("").toLowerCase() === correctWord.toLowerCase(),
-              },
-            ]
-          : [],
-        subtitle: subtitle(kanaLabel(data.kana)),
+        ...empty,
+        question: { type: PracticeType.WordBuilding, [PracticeType.WordBuilding]: data },
+        lines:
+          picked.length > 0
+            ? [{ question: data.title, answer: segments, isCorrect: errors === 0 }]
+            : [],
+        errors,
       };
     }
 
@@ -190,26 +135,20 @@ const formatResultAnswer = ({
       const data = question[PracticeType.Typing]!;
       const from = letterText(data.question, data.questionKana, transliterations);
       const to = letterText(data.question, Kana.Romaji, transliterations);
-      const typed = selectOf(userSelect, PracticeType.Typing);
+      const typed = (selectOf(userSelect, PracticeType.Typing) ?? "").toUpperCase();
+      const { segments, errors } = compareSymbols(typed.split(""), to.split(""));
 
       return {
-        question: {
-          type: PracticeType.Typing,
-
-          [PracticeType.Typing]: data,
-        },
-
-        lines: [`${from} → ${to}`],
-        userLines:
-          typed !== null
-            ? [{ text: `${from} → ${typed}`, isCorrect: typed.toLowerCase() === to.toLowerCase() }]
-            : [],
-        subtitle: subtitle(kanaLabel(data.questionKana)),
+        ...empty,
+        question: { type: PracticeType.Typing, [PracticeType.Typing]: data },
+        lines:
+          typed.length > 0 ? [{ question: from, answer: segments, isCorrect: errors === 0 }] : [],
+        errors,
       };
     }
 
     default:
-      return { question: null, lines: [], userLines: [], subtitle: "" };
+      return { ...empty, question: null };
   }
 };
 

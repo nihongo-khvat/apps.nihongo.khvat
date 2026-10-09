@@ -154,11 +154,15 @@ const Indonesian = {
 
     title: "Latihan selesai",
     score: "Skor",
+    percent: "Persentase",
 
     sec: "detik",
     min: "menit",
+    errors_one: "{{count}} kesalahan",
+    errors_other: "{{count}} kesalahan",
 
     question: "pertanyaan",
+    questionNumber: "No. {{number}}",
 
     done: "Selesai",
 

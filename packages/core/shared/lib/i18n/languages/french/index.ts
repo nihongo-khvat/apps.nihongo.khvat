@@ -156,11 +156,16 @@ const French = {
 
     title: "Pratique terminée",
     score: "Score",
+    percent: "Pourcentage",
 
     sec: "sec",
     min: "min",
+    errors_one: "{{count}} erreur",
+    errors_many: "{{count}} erreurs",
+    errors_other: "{{count}} erreurs",
 
     question: "question",
+    questionNumber: "Q{{number}}",
 
     done: "Terminer",
 

@@ -151,11 +151,15 @@ const ChineseHK = {
 
     title: "練習完成",
     score: "分數",
+    percent: "正確率",
 
     sec: "秒",
     min: "分",
+    errors_one: "{{count}} 個錯誤",
+    errors_other: "{{count}} 個錯誤",
 
     question: "題",
+    questionNumber: "第{{number}}題",
 
     done: "完成",
 

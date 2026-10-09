@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
-import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
-import { ILetter } from "@nihongo/core/shared/data/lettersTable";
 import useGetRomaji from "@nihongo/core/shared/lib/i18n/hooks/useKey";
 import { Typography } from "@nihongo/core/shared/typography";
 import PrimaryButton from "@nihongo/core/shared/ui/buttons/Primary/primary-button";
@@ -13,7 +11,10 @@ import { View, Text, ScrollView, StyleSheet, BackHandler, useWindowDimensions } 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Svg, Path } from "react-native-svg";
 
-import formatResultAnswer from "../education-practice/helpers/format-result-answer";
+import formatResultAnswer, {
+  ResultAnswerView,
+  letterText,
+} from "../education-practice/helpers/format-result-answer";
 import { PracticeResultData } from "../education-practice/lib/types/questions";
 
 import { ROUTES, RootStackParamList } from "@/app/routes.types";
@@ -53,6 +54,18 @@ const ResultStatusIcon: React.FC<{ isCorrect: boolean; colors: ColorsType; size?
         strokeLinejoin="round"
       />
     )}
+  </Svg>
+);
+
+const ArrowIcon: React.FC<{ color: string }> = ({ color }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M5 12h14M13 6l6 6-6 6"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </Svg>
 );
 
@@ -102,12 +115,16 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
   const answers = questionsTime
     .slice(0, questions.length)
     .map(({ index, isCorrectAnswer, userSelect }) => ({
-      ...formatResultAnswer({ question: questions[index], userSelect, t, transliterations }),
+      ...formatResultAnswer({ question: questions[index], userSelect, transliterations }),
       isCorrectAnswer,
       userSelect,
     }));
 
   const styles = makeStyles(colors);
+
+  const [widgetsWidth, setWidgetsWidth] = useState(0);
+  const widgetWidth = (widgetsWidth - WIDGETS_GAP * 2) / 3;
+  const widgetStyle = [styles.header_widget, widgetsWidth > 0 && { width: widgetWidth }];
 
   const home = useCallback(async () => {
     await requestStoreReview();
@@ -128,325 +145,241 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
     return () => backHandler.remove();
   }, [home]);
 
-  const millisecondsToSeconds = (milliseconds: number) => {
-    const totalSeconds = milliseconds / 1000;
-    if (totalSeconds >= 60) {
-      const minutes = Math.floor(totalSeconds / 60);
-      const remainingSeconds = totalSeconds % 60;
-      return `${minutes.toFixed(0)} ${t("result.min")} ${remainingSeconds.toFixed(0)} ${t("result.sec")}`;
-    } else {
-      return `${totalSeconds.toFixed(0)} ${t("result.sec")}`;
-    }
+  const formatDuration = (milliseconds: number) => {
+    const seconds = Math.round(milliseconds / 1000);
+    const [value, unit] =
+      seconds < 60
+        ? [seconds, t("result.sec")]
+        : [Number((seconds / 60).toFixed(1)), t("result.min")];
+
+    return { value: String(value), unit: unit.charAt(0).toUpperCase() + unit.slice(1) };
   };
 
-  const getIletterByKey = (answersKana: string, letter: ILetter) => {
-    if (answersKana === "Romaji") return letter.transliterations[transliterations];
-    if (answersKana === "Hiragana") return letter.hi;
-    if (answersKana === "Katakana") return letter.ka;
+  const totalTime = formatDuration(data.totalTime);
 
-    return "null";
+  const isMixedPractice = new Set(questions.map((question) => question.type)).size > 1;
+
+  const answerContentWidth = width - 64;
+  const optionWidth = (answerContentWidth - 8) / 2;
+  const canvasSize = (answerContentWidth - 12) / 2;
+
+  const renderOption = (
+    key: string,
+    text: string,
+    isCorrect: boolean,
+    isWrongPick: boolean,
+    fullWidth: boolean,
+  ) => (
+    <View
+      key={key}
+      style={[
+        styles.option,
+        { width: fullWidth ? answerContentWidth : optionWidth },
+        isCorrect && { backgroundColor: colors.BgSuccess },
+        isWrongPick && { backgroundColor: colors.BgDanger },
+      ]}
+    >
+      <Text
+        style={[styles.option__text, (isCorrect || isWrongPick) && { color: colors.TextWhite }]}
+      >
+        {text}
+      </Text>
+    </View>
+  );
+
+  const renderAnswerBody = (
+    answer: ResultAnswerView & { userSelect: (typeof questionsTime)[number]["userSelect"] },
+    index: number,
+  ) => {
+    const { question, userSelect } = answer;
+
+    if (question?.type === PracticeType.Testing || question?.type === PracticeType.Listening) {
+      const data =
+        question.type === PracticeType.Testing
+          ? question[PracticeType.Testing]!
+          : question[PracticeType.Listening]!;
+      const picked =
+        userSelect?.type === PracticeType.Testing || userSelect?.type === PracticeType.Listening
+          ? userSelect.value
+          : null;
+
+      return (
+        <View style={styles.options}>
+          {data.answers.map((item) =>
+            renderOption(
+              index + item.id,
+              letterText(item, data.answersKana, transliterations),
+              item.id === data.question.id,
+              picked?.id === item.id && item.id !== data.question.id,
+              false,
+            ),
+          )}
+        </View>
+      );
+    }
+
+    if (question?.type === PracticeType.MultipleChoice) {
+      const pickedTitle =
+        userSelect?.type === PracticeType.MultipleChoice ? userSelect.value : null;
+
+      return (
+        <View style={styles.options}>
+          {question[PracticeType.MultipleChoice]!.answers.map((item) =>
+            renderOption(
+              index + item.title,
+              item.title,
+              item.isTrue,
+              pickedTitle === item.title && !item.isTrue,
+              true,
+            ),
+          )}
+        </View>
+      );
+    }
+
+    if (question?.type === PracticeType.Drawing) {
+      const drawing = userSelect?.type === PracticeType.Drawing ? userSelect.value : null;
+      const drawingData = question[PracticeType.Drawing]!;
+      const drawingKana =
+        drawingData.questionKana === Kana.Hiragana ? KanaAlphabet.Hiragana : KanaAlphabet.Katakana;
+
+      return (
+        <View style={styles.drawings}>
+          <View style={styles.drawing}>
+            <Text style={styles.drawing__label}>{t("result.example")}:</Text>
+            <View style={styles.drawing__canvas}>
+              <DrawingReference
+                letter={drawingData.question}
+                kana={drawingKana}
+                size={canvasSize}
+                additionalPadding={0.2}
+              />
+            </View>
+          </View>
+
+          <View style={styles.drawing}>
+            <Text style={styles.drawing__label}>{t("result.you")}:</Text>
+            <View style={[styles.drawing__canvas, { width: canvasSize, height: canvasSize }]}>
+              {drawing !== null && <DrawingPreview drawing={drawing} size={canvasSize} />}
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    if (answer.lines.length === 0) return null;
+
+    return (
+      <View style={styles.lines}>
+        {answer.lines.map((line, lineIndex) => (
+          <View key={lineIndex} style={styles.line}>
+            <ResultStatusIcon size={20} isCorrect={line.isCorrect} colors={colors} />
+            <Text style={styles.line__question}>{line.question}</Text>
+            <ArrowIcon color={colors.TextPrimary} />
+            <Text style={styles.line__answer}>
+              {line.answer.map((segment, segmentIndex) => (
+                <Text
+                  key={segmentIndex}
+                  style={{ color: segment.isCorrect ? colors.TextSuccess : colors.TextDanger }}
+                >
+                  {segment.text}
+                </Text>
+              ))}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
   };
 
   return (
     <View
-      style={{
-        flex: 1,
-        paddingTop: insets.top,
-        backgroundColor: colors.BgSecondary,
-      }}
+      style={[
+        {
+          marginTop: insets.top,
+        },
+        styles.layout,
+      ]}
     >
       <View style={styles.header}>
         <Text style={styles.title}>{t("result.title")}</Text>
 
-        <Text style={{ color: colors.TextPrimary, ...Typography.H3 }}>
-          {(data.correctAnswers / data.totalQuestions) * 100}%
-        </Text>
+        <View
+          style={styles.header_widgets}
+          onLayout={(e) => setWidgetsWidth(e.nativeEvent.layout.width)}
+        >
+          <View style={widgetStyle}>
+            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+              {((data.correctAnswers / data.totalQuestions) * 100).toFixed(0)}%
+            </Text>
+            <Text style={styles.header_widget__subtitle}>{t("result.percent")}</Text>
+          </View>
+          <View style={widgetStyle}>
+            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+              {data.correctAnswers} / {data.totalQuestions}
+            </Text>
+            <Text style={styles.header_widget__subtitle}>{t("result.score")}</Text>
+          </View>
+          <View style={widgetStyle}>
+            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+              {totalTime.value}
+            </Text>
+            <Text style={styles.header_widget__subtitle}>{totalTime.unit}</Text>
+          </View>
+        </View>
       </View>
 
       <View style={[styles.scroll]}>
-        <View style={styles.scroll__clip}>
-          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-            <View style={styles.card}>
-              <View style={styles.cardContent}>
-                <Text style={[Typography.H4, { color: colors.TextPrimary }]}>
-                  {data.correctAnswers} / {data.totalQuestions}
-                </Text>
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+          <View style={styles.answers}>
+            {answers.map((answer, index) => {
+              const { question } = answer;
+              if (question === null) return null;
 
-                <Text style={[Typography.regularLabel, { color: colors.TextSecondary }]}>
-                  {t("result.score")}
-                </Text>
-              </View>
-            </View>
+              const isErrorsCard =
+                question.type === PracticeType.MatchingPairs ||
+                question.type === PracticeType.WordBuilding ||
+                question.type === PracticeType.Typing;
 
-            <View style={styles.card}>
-              <View style={styles.cardContent}>
-                <Text style={[Typography.H4, { color: colors.TextPrimary }]}>
-                  {millisecondsToSeconds(data.totalTime)}
-                </Text>
+              const shortNumber = t("result.questionNumber", { number: index + 1 });
+              const number = isMixedPractice
+                ? `${t(`practice.modes.${question.type}.title`)} / ${shortNumber}`
+                : shortNumber;
 
-                <Text style={[Typography.regularLabel, { color: colors.TextSecondary }]}>
-                  ({millisecondsToSeconds(data.avgTime)} /{" "}
-                  {t("result.question")?.toLocaleLowerCase()})
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.answers}>
-              {answers.map((answer, index) => {
-                if (answer.question === null) return <View key={index}></View>;
-
-                if (answer.question.type === PracticeType.MultipleChoice) {
-                  // * userSelect хранит title выбранного варианта, id у ответов нет
-                  const pickedTitle =
-                    answer.userSelect?.type === PracticeType.MultipleChoice
-                      ? answer.userSelect.value
-                      : null;
-
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.answer,
-                        index >= answers.length - 1 && { borderBottomWidth: 0 },
-                      ]}
-                    >
-                      <Text style={{ color: colors.TextPrimary, ...Typography.regularDefault }}>
-                        {answer.question![PracticeType.MultipleChoice]?.word.kana}
-                      </Text>
-                      {answer.question![PracticeType.MultipleChoice]?.answers.map((item) => {
-                        const isWrongPick = pickedTitle === item.title && !item.isTrue;
-
-                        return (
-                          <View
-                            style={{
-                              backgroundColor: item.isTrue
-                                ? colors.BgSuccess
-                                : isWrongPick
-                                  ? colors.BgDanger
-                                  : colors.BgSecondary,
-                              padding: 12,
-                              borderRadius: 6,
-                            }}
-                            key={index + item.title}
-                          >
-                            <Text
-                              style={{
-                                color:
-                                  item.isTrue || isWrongPick
-                                    ? colors.TextWhite
-                                    : colors.TextPrimary,
-                              }}
-                            >
-                              {item.title}
-                            </Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  );
-                }
-
-                if (answer.question.type === PracticeType.Drawing) {
-                  const drawing =
-                    answer.userSelect?.type === PracticeType.Drawing
-                      ? answer.userSelect.value
-                      : null;
-
-                  const drawingData = answer.question[PracticeType.Drawing]!;
-                  const drawingKana =
-                    drawingData.questionKana === Kana.Hiragana
-                      ? KanaAlphabet.Hiragana
-                      : KanaAlphabet.Katakana;
-
-                  const canvasSize = (width - 60) / 2 - 6;
-
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.answer,
-                        index >= answers.length - 1 && { borderBottomWidth: 0 },
-                      ]}
-                    >
-                      <View style={styles.answer__header}>
-                        <Text style={{ color: colors.TextPrimary, ...Typography.regularDefault }}>
-                          {t("result.drawing")}:{" "}
+              return (
+                <View key={index} style={styles.answer}>
+                  <View style={styles.answer__header}>
+                    {isErrorsCard ? (
+                      <Text
+                        style={[
+                          styles.answer__errors,
                           {
-                            answer.question![PracticeType.Drawing]?.question.transliterations[
-                              transliterations
-                            ]
-                          }
-                        </Text>
-
-                        <View style={styles.answer__status}>
-                          <ResultStatusIcon
-                            size={16}
-                            isCorrect={answer.isCorrectAnswer}
-                            colors={colors}
-                          />
-
-                          <Text
-                            style={[
-                              Typography.regularLabel,
-                              {
-                                color: answer.isCorrectAnswer
-                                  ? colors.TextSuccess
-                                  : colors.TextDanger,
-                              },
-                            ]}
-                          >
-                            {answer.isCorrectAnswer ? t("result.correct") : t("result.wrong")}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View></View>
-
-                      {/* * слева — Правильно, справа — Человек написал */}
-                      <View style={styles.answer__drawings}>
-                        <View>
-                          <Text
-                            style={{
-                              color: colors.TextPrimary,
-                              ...Typography.regularDefault,
-                              marginBottom: 6,
-                            }}
-                          >
-                            {t("result.example")}:
-                          </Text>
-                          <View style={{ backgroundColor: colors.BgSecondary, borderRadius: 6 }}>
-                            <DrawingReference
-                              letter={drawingData.question}
-                              kana={drawingKana}
-                              size={canvasSize}
-                              additionalPadding={0.2}
-                            />
-                          </View>
-                        </View>
-
-                        <View>
-                          <Text
-                            style={{
-                              color: colors.TextPrimary,
-                              ...Typography.regularDefault,
-                              marginBottom: 6,
-                            }}
-                          >
-                            {t("result.you")}:
-                          </Text>
-                          <View style={{ backgroundColor: colors.BgSecondary, borderRadius: 6 }}>
-                            {drawing !== null && (
-                              <DrawingPreview drawing={drawing} size={canvasSize} />
-                            )}
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  );
-                }
-
-                if (answer.question.type === PracticeType.Testing) {
-                  const pickedId =
-                    answer.userSelect?.type === PracticeType.Testing
-                      ? answer.userSelect.value.id
-                      : null;
-
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.answer,
-                        index >= answers.length - 1 && { borderBottomWidth: 0 },
-                      ]}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          borderRadius: 6,
-                          gap: 6,
-                          flexWrap: "wrap",
-                          width: width - 62,
-                        }}
+                            color: answer.errors === 0 ? colors.TextSuccess : colors.TextDanger,
+                          },
+                        ]}
                       >
-                        {answer.question[PracticeType.Testing]?.answers.map((item) => {
-                          const isCorrectItem =
-                            answer.question![PracticeType.Testing]?.question.id === item.id;
-
-                          const isWrongPick = pickedId === item.id && !isCorrectItem;
-
-                          return (
-                            <View
-                              key={index + item.id}
-                              style={{
-                                backgroundColor: isCorrectItem
-                                  ? colors.BgSuccess
-                                  : isWrongPick
-                                    ? colors.BgDanger
-                                    : colors.BgSecondary,
-                                width: (width - 62) / 2 - 4,
-                                padding: 12,
-                                borderRadius: 6,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color:
-                                    isCorrectItem || isWrongPick
-                                      ? colors.TextWhite
-                                      : colors.TextPrimary,
-                                  ...Typography.boldLabel,
-                                }}
-                              >
-                                {getIletterByKey(
-                                  answer.question![PracticeType.Testing]?.answersKana || "",
-                                  item,
-                                )}
-                              </Text>
-                            </View>
-                          );
-                        })}
-                      </View>
-                    </View>
-                  );
-                }
-
-                return (
-                  <View
-                    key={index}
-                    style={[styles.answer, index >= answers.length - 1 && { borderBottomWidth: 0 }]}
-                  >
-                    {answer.userLines.length > 0 && (
-                      <View style={styles.answer__userLines}>
-                        {answer.userLines.map((userLine, userLineIndex) => (
-                          <View key={userLineIndex} style={styles.answer__userLine}>
-                            <ResultStatusIcon
-                              size={16}
-                              isCorrect={userLine.isCorrect}
-                              colors={colors}
-                            />
-
-                            <Text
-                              style={[
-                                styles.answer__userLineText,
-                                {
-                                  color: userLine.isCorrect
-                                    ? colors.TextSuccess
-                                    : colors.TextDanger,
-                                },
-                              ]}
-                            >
-                              {userLine.text}
-                            </Text>
-                          </View>
-                        ))}
+                        {t("result.errors", { count: answer.errors })}
+                      </Text>
+                    ) : (
+                      <View style={styles.answer__heading}>
+                        <ResultStatusIcon
+                          size={20}
+                          isCorrect={answer.isCorrectAnswer}
+                          colors={colors}
+                        />
+                        <Text style={styles.answer__title}>{answer.title}</Text>
                       </View>
                     )}
+
+                    <Text style={styles.answer__number}>{number}</Text>
                   </View>
-                );
-              })}
-            </View>
-          </ScrollView>
-        </View>
+
+                  {renderAnswerBody(answer, index)}
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
 
       <View style={{ marginBottom: insets.bottom, marginTop: 16, paddingHorizontal: 20 }}>
@@ -456,29 +389,55 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
   );
 };
 
+const WIDGETS_GAP = 16;
+
 const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
+    layout: {
+      flex: 1,
+      backgroundColor: colors.BgSecondary,
+    },
+
     header: {
       backgroundColor: colors.BgPrimary,
       flexDirection: "column",
-      alignItems: "center",
-      paddingTop: 32,
-      paddingBottom: 32,
-      gap: 32,
+      paddingTop: 16,
+      gap: 16,
       borderBottomLeftRadius: 24,
       borderBottomRightRadius: 24,
-      marginBottom: 16,
+      paddingBottom: 16,
+      paddingHorizontal: 16,
     },
+
     title: {
       color: colors.TextPrimary,
       ...Typography.H3,
-      textAlign: "center",
     },
-    scroll__clip: {
-      flex: 1,
 
+    header_widgets: {
+      flexDirection: "row",
+      gap: WIDGETS_GAP,
+      alignSelf: "stretch",
+    },
+
+    header_widget: {
+      flexGrow: 0,
+      flexShrink: 0,
+      alignItems: "center",
+      backgroundColor: colors.BgSecondary,
+      padding: 16,
       borderRadius: 12,
-      overflow: "hidden",
+    },
+
+    header_widget__title: {
+      ...Typography.H4,
+      color: colors.TextPrimary,
+    },
+
+    header_widget__subtitle: {
+      color: colors.TextSecondary,
+
+      ...Typography.boldLabel,
     },
 
     scroll: {
@@ -489,54 +448,17 @@ const makeStyles = (colors: ColorsType) =>
       paddingTop: 0,
       paddingBottom: 0,
     },
-    card: {
-      width: "100%",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    cardContent: {
-      borderRadius: 12,
-      paddingTop: 16,
-      paddingBottom: 16,
-      backgroundColor: colors.BgPrimary,
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 4,
-      marginBottom: 8,
-      width: "100%",
-      maxWidth: TABLET_WIDTH,
-    },
 
     answers: {
-      backgroundColor: colors.BgPrimary,
-      borderRadius: 12,
+      gap: 12,
+      paddingTop: 16,
     },
 
     answer: {
-      borderBottomWidth: 1,
-
-      borderBottomColor: colors.BorderDefault,
-
+      backgroundColor: colors.BgPrimary,
+      borderRadius: 12,
       padding: 16,
-
-      flexDirection: "column",
       gap: 12,
-    },
-
-    answer__texts: {
-      flex: 1,
-    },
-
-    answer__title: {
-      color: colors.TextSecondary,
-
-      ...Typography.boldDefault,
-    },
-
-    answer__subtitle: {
-      color: colors.TextPrimary,
-
-      ...Typography.regularLabel,
     },
 
     answer__header: {
@@ -546,29 +468,83 @@ const makeStyles = (colors: ColorsType) =>
       gap: 8,
     },
 
-    answer__status: {
+    answer__heading: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
+      gap: 8,
+      flexShrink: 1,
     },
 
-    answer__drawings: {
+    answer__title: {
+      ...Typography.boldDefault,
+      color: colors.TextPrimary,
+    },
+
+    answer__number: {
+      ...Typography.regularLabel,
+      color: colors.TextSecondary,
+    },
+
+    answer__errors: {
+      ...Typography.boldLabel,
+    },
+
+    options: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+
+    option: {
+      alignItems: "center",
+      paddingVertical: 10,
+      borderRadius: 8,
+      backgroundColor: colors.BgSecondary,
+    },
+
+    option__text: {
+      ...Typography.boldLabel,
+      color: colors.TextPrimary,
+    },
+
+    drawings: {
       flexDirection: "row",
       gap: 12,
     },
 
-    answer__userLines: {
-      gap: 4,
+    drawing: {
+      gap: 8,
     },
 
-    answer__userLine: {
+    drawing__label: {
+      ...Typography.boldLabel,
+      color: colors.TextPrimary,
+    },
+
+    drawing__canvas: {
+      backgroundColor: colors.BgSecondary,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+
+    lines: {
+      gap: 8,
+    },
+
+    line: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
+      gap: 8,
     },
 
-    answer__userLineText: {
-      ...Typography.regularLabel,
+    line__question: {
+      ...Typography.regularDefault,
+      color: colors.TextPrimary,
+    },
+
+    line__answer: {
+      ...Typography.boldDefault,
+      flexShrink: 1,
     },
   });
 

@@ -154,11 +154,15 @@ const German = {
 
     title: "Übung beendet",
     score: "Punktzahl",
+    percent: "Prozent",
 
     sec: "Sek",
     min: "Min",
+    errors_one: "{{count}} Fehler",
+    errors_other: "{{count}} Fehler",
 
     question: "Frage",
+    questionNumber: "Nr. {{number}}",
 
     done: "Fertig",
 

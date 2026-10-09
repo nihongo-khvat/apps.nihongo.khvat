@@ -155,11 +155,16 @@ const Italian = {
 
     title: "Pratica completata",
     score: "Punteggio",
+    percent: "Percentuale",
 
     sec: "sec",
     min: "min",
+    errors_one: "{{count}} errore",
+    errors_many: "{{count}} errori",
+    errors_other: "{{count}} errori",
 
     question: "domanda",
+    questionNumber: "D{{number}}",
 
     done: "Fine",
 

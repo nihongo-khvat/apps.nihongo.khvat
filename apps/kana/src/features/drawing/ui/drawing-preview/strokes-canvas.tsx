@@ -1,6 +1,5 @@
 import React from "react";
 
-import { useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { StyleSheet, View } from "react-native";
 import { Circle, Path, Svg } from "react-native-svg";
 
@@ -37,17 +36,13 @@ const StrokesCanvas: React.FC<StrokesCanvasProps> = ({
   size,
   additionalPadding = 0,
 }) => {
-  const { colors } = useThemeContext();
-
   const strokeWidth = viewBoxSize / 40;
 
   const padding = viewBoxSize * (PADDING_RATIO + additionalPadding);
   const viewBox = `${-padding} ${-padding} ${viewBoxSize + padding * 2} ${viewBoxSize + padding * 2}`;
 
   return (
-    <View
-      style={[styles.container, { width: size, height: size, borderColor: colors.BorderDefault }]}
-    >
+    <View style={[styles.container, { width: size, height: size }]}>
       <Svg width={size} height={size} viewBox={viewBox}>
         {strokes.map((stroke, index) => {
           const color = STROKE_COLORS[index % STROKE_COLORS.length];
@@ -86,8 +81,6 @@ const StrokesCanvas: React.FC<StrokesCanvasProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderRadius: 8,
     overflow: "hidden",
   },
 });

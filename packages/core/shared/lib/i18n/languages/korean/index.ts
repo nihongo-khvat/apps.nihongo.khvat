@@ -152,11 +152,15 @@ const Korean = {
 
     title: "연습 완료",
     score: "점수",
+    percent: "정답률",
 
     sec: "초",
     min: "분",
+    errors_one: "오류 {{count}}개",
+    errors_other: "오류 {{count}}개",
 
     question: "문제",
+    questionNumber: "{{number}}번",
 
     done: "완료",
 

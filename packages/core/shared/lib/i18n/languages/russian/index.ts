@@ -154,11 +154,17 @@ const Russian = {
 
     title: "Практика окончена",
     score: "Счёт",
+    percent: "Процент",
 
     sec: "cек",
     min: "мин",
+    errors_one: "{{count}} ошибка",
+    errors_few: "{{count}} ошибки",
+    errors_many: "{{count}} ошибок",
+    errors_other: "{{count}} ошибки",
 
     question: "вопрос",
+    questionNumber: "№{{number}}",
 
     done: "Закончить",
 

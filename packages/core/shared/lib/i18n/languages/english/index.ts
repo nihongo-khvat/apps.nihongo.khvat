@@ -154,11 +154,15 @@ const English = {
 
     title: "Practice Complete",
     score: "Score",
+    percent: "Percent",
 
     sec: "sec",
     min: "min",
+    errors_one: "{{count}} error",
+    errors_other: "{{count}} errors",
 
     question: "question",
+    questionNumber: "Q{{number}}",
 
     done: "Done",
 

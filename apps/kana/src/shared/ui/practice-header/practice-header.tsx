@@ -22,6 +22,7 @@ const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
     symbol: {
       ...Typography.H1,
+      lineHeight: 128,
       textAlign: "center",
       color: colors.TextPrimary,
     },

@@ -155,11 +155,16 @@ const SpanishMX = {
 
     title: "Práctica completada",
     score: "Puntuación",
+    percent: "Porcentaje",
 
     sec: "seg",
     min: "min",
+    errors_one: "{{count}} error",
+    errors_many: "{{count}} errores",
+    errors_other: "{{count}} errores",
 
     question: "pregunta",
+    questionNumber: "P{{number}}",
 
     done: "Listo",
 

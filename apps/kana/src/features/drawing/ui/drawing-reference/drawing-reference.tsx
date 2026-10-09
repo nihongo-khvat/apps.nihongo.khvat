@@ -61,9 +61,7 @@ const DrawingReference: React.FC<DrawingReferenceProps> = ({
   const image = getImage(`${kana}_${letter.id.replaceAll("-", "_")}`);
 
   return (
-    <View
-      style={[styles.container, { width: size, height: size, borderColor: colors.BorderDefault }]}
-    >
+    <View style={[styles.container, { width: size, height: size }]}>
       <View style={[styles.image, { transform: [{ scale: size / SVG_SIZE }] }]}>
         {image(colors.BgAccent, colors.BgContrast)}
       </View>
@@ -73,8 +71,6 @@ const DrawingReference: React.FC<DrawingReferenceProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderRadius: 8,
     overflow: "hidden",
 
     alignItems: "center",

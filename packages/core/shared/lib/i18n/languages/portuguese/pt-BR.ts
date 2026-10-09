@@ -154,11 +154,16 @@ const PortugueseBR = {
 
     title: "Prática concluída",
     score: "Pontuação",
+    percent: "Porcentagem",
 
     sec: "seg",
     min: "min",
+    errors_one: "{{count}} erro",
+    errors_many: "{{count}} erros",
+    errors_other: "{{count}} erros",
 
     question: "pergunta",
+    questionNumber: "Q{{number}}",
 
     done: "Concluir",
 
