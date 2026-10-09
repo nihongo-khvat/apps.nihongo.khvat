@@ -4,7 +4,6 @@ import { isIOS } from "@nihongo/core/shared/constants/platformUtil";
 import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { Typography } from "@nihongo/core/shared/typography";
-import PrimaryButton from "@nihongo/core/shared/ui/buttons/Primary/primary-button";
 import { ModalHeader } from "@nihongo/core/shared/ui/modal-header/modal-header";
 import Switcher from "@nihongo/core/shared/ui/switcher/switcher";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -14,6 +13,8 @@ import { View, Text, SectionList, StyleSheet } from "react-native";
 import { StatusBar } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useKanaContext } from "./model/hooks";
 
 import { ROUTES, RootStackParamList } from "@/app/routes.types";
 import EducationKanaTableSelected from "@/features/education/education-kana-table-selected/education-kana-table";
@@ -25,7 +26,7 @@ const KanaTableChoiceLettersPage: React.FC = () => {
   const navigation = useNavigation<ScreenNavigationProps>();
   const { colors } = useThemeContext();
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   useFocusEffect(() => {
@@ -36,6 +37,8 @@ const KanaTableChoiceLettersPage: React.FC = () => {
       StatusBar.setBarStyle(barStyle);
     };
   });
+
+  const { selectedLettersHiragana, selectedLettersKatakana } = useKanaContext();
 
   const [activeTab, setActiveTab] = useState<KanaAlphabet>(KanaAlphabet.Hiragana);
 
@@ -54,9 +57,13 @@ const KanaTableChoiceLettersPage: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <ModalHeader
-        title={activeTab === KanaAlphabet.Hiragana ? t("kana.hiragana") : t("kana.katakana")}
+        title={t("tabs.kana")}
         left={{
           text: t("common.close"),
+          onPress: done,
+        }}
+        right={{
+          text: t("common.save"),
           onPress: done,
         }}
       />
@@ -123,20 +130,13 @@ const KanaTableChoiceLettersPage: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           options={[KanaAlphabet.Hiragana, KanaAlphabet.Katakana]}
-          translate={
-            i18n.language.startsWith("zh")
-              ? [t("kana.hiragana"), t("kana.katakana")]
-              : ["ひらがな", "カタカナ"]
-          }
+          translate={[
+            `${t("kana.hiragana")} (${selectedLettersHiragana})`,
+            `${t("kana.katakana")} (${selectedLettersKatakana})`,
+          ]}
           customStyles={{
-            flex: 2,
+            flex: 1,
           }}
-        />
-        <PrimaryButton
-          isFullWidth
-          isHapticFeedback
-          onClick={() => done()}
-          text={t("common.done")}
         />
       </View>
     </View>
@@ -164,8 +164,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 10,
-    paddingBottom: 10,
-
+    paddingBottom: 8,
     height: 46,
   },
   name: {

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { TABLET_WIDTH } from "../../constants/sizes";
 import { useThemeContext } from "../../contexts/theme/theme-context";
 
 interface KeyboardScrollLayoutProps {
@@ -78,6 +79,10 @@ const makeStyles = (insets: EdgeInsets) =>
 
       flexGrow: 1,
       alignItems: "center",
+
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
     },
   });
 

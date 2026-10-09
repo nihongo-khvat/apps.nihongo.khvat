@@ -10,7 +10,6 @@ import { OnSubmit } from "@/pages/education/practice/education-practice/lib/type
 import { PracticeType, TEST_DELAY } from "@/shared/constants/kana";
 import { Word } from "@/shared/data/words";
 import { useFirstClickHandler } from "@/shared/helpers/firstClickHandler";
-import Title from "@/widgets/learning/lesson/info-screen/title/title";
 
 interface EducationPracticeChooseValueProps {
   word: Word;
@@ -26,7 +25,6 @@ const EducationPracticeChooseValue: React.FC<EducationPracticeChooseValueProps> 
   onCompleted,
 }) => {
   const {
-    t,
     i18n: { language },
   } = useTranslation();
   const { colors } = useThemeContext();
@@ -54,9 +52,10 @@ const EducationPracticeChooseValue: React.FC<EducationPracticeChooseValueProps> 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.question}>{t("practice.selectCorrectTransliteration")}</Text>
-
-        <Title title={word.kana} subtitle={`(${word[langKey]})`} />
+        <View style={styles.word}>
+          <Text style={styles.word__kana}>{word.kana}</Text>
+          <Text style={styles.word__translate}>({word[langKey]})</Text>
+        </View>
 
         <SelectAnswer key={answersList.join()} answers={answersList} onFinish={onFinish} />
       </View>
@@ -76,17 +75,25 @@ const makeStyles = (colors: ColorsType) =>
       flex: 1,
       flexDirection: "column",
       alignItems: "center",
+      justifyContent: "space-between",
 
       width: "100%",
       maxWidth: 546,
     },
 
-    question: {
-      width: "100%",
-      textAlign: "center",
-      ...Typography.boldDefault,
+    word: {
+      alignItems: "center",
+      gap: 8,
+    },
+    word__kana: {
+      ...Typography.H2,
       color: colors.TextPrimary,
-      marginBottom: 8,
+      textAlign: "center",
+    },
+    word__translate: {
+      ...Typography.regularDefault,
+      color: colors.TextSecondary,
+      textAlign: "center",
     },
   });
 

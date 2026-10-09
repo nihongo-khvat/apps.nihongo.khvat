@@ -46,9 +46,9 @@ const SequenceUi: React.FC<SequenceProps> = ({ sequence, onFinish, onError }) =>
 
   const getLetterStyle = (idx: number) => {
     const status = sequenceCurrent.answerStatus[idx];
-    if (status === true) return { borderColor: colors.BgSuccess };
-    if (status === false) return { borderColor: colors.BgDanger };
-    return { borderColor: colors.BgLightGray };
+    if (status === true) return { backgroundColor: colors.BgSuccess };
+    if (status === false) return { backgroundColor: colors.BgDanger };
+    return { backgroundColor: colors.BgLightGray };
   };
 
   return (
@@ -61,11 +61,13 @@ const SequenceUi: React.FC<SequenceProps> = ({ sequence, onFinish, onError }) =>
               sequenceCurrent.removeOne();
             }}
             key={`letter-${index}`}
-            style={[styles.letterContainer, getLetterStyle(index)]}
+            style={styles.letterContainer}
           >
             <Text style={[styles.letter, Typography.regularDefault, { color: colors.TextPrimary }]}>
               {letter !== null && letter}
             </Text>
+
+            <View style={[styles.letterLine, getLetterStyle(index)]} />
           </Pressable>
         ))}
       </View>
@@ -111,11 +113,18 @@ const styles = StyleSheet.create({
   letterContainer: {
     minWidth: 22,
     minHeight: 32,
-    borderBottomWidth: 2,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: 32,
+  },
+  letterLine: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    borderRadius: 2,
   },
   letter: {
     textTransform: "uppercase",

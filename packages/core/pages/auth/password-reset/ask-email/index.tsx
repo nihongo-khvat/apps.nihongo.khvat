@@ -140,7 +140,7 @@ const makeStyles = (colors: ColorsType) =>
     },
 
     subtitle: {
-      marginTop: 16,
+      marginTop: 8,
 
       ...Typography.regularDefault,
 

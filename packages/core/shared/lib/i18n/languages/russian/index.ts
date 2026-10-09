@@ -49,10 +49,6 @@ const Russian = {
       seconds: "{{count}} с",
     },
 
-    selectCorrectTransliteration: "Выбери правильную транслитерацию.",
-    selectHiraganaForWord: "Выбери хиригану в правильном порядке.",
-    selectKatakanaForWord: "Выбери катакана в правильном порядке.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Недостаточно символов",

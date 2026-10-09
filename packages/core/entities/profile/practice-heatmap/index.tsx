@@ -1,14 +1,17 @@
 import React, { useMemo, useState } from "react";
 
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { toDateKey } from "@nihongo/core/shared/contexts/study-activity/study-activity-context";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { useTranslation } from "react-i18next";
-import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
+import { View, Text, StyleSheet, LayoutChangeEvent, useWindowDimensions } from "react-native";
 
 const DAY_SIZE = 14;
 const GAP = 2.5;
 const DAYS_IN_WEEK = 7;
 const MAX_WEEKS = 53;
+const PAGE_PADDING = 16;
+const CONTAINER_PADDING = 16;
 
 function withAlpha(hex: string, alpha: number) {
   const raw = hex.replace("#", "").trim();
@@ -72,7 +75,13 @@ interface PracticeHeatmapProps {
 export const PracticeHeatmap: React.FC<PracticeHeatmapProps> = ({ data = {} }) => {
   const { t } = useTranslation();
   const { colors } = useThemeContext();
-  const [width, setWidth] = useState(0);
+  const { width: windowWidth } = useWindowDimensions();
+  const [measuredWidth, setMeasuredWidth] = useState(0);
+
+  const width =
+    measuredWidth > 0
+      ? measuredWidth
+      : Math.min(windowWidth - PAGE_PADDING * 2, TABLET_WIDTH) - CONTAINER_PADDING * 2;
 
   const styles = makeStyles(colors);
   const mapColors = makeHeatmapColors(colors.BgAccent);
@@ -101,7 +110,7 @@ export const PracticeHeatmap: React.FC<PracticeHeatmapProps> = ({ data = {} }) =
 
   const onLayout = (e: LayoutChangeEvent) => {
     const next = e.nativeEvent.layout.width;
-    if (next !== width) setWidth(next);
+    if (next > 0 && next !== measuredWidth) setMeasuredWidth(next);
   };
 
   return (
@@ -146,7 +155,7 @@ const makeStyles = (colors: ColorsType) =>
     container: {
       backgroundColor: colors.BgPrimary,
       borderRadius: 12,
-      padding: 16,
+      padding: CONTAINER_PADDING,
       gap: 12,
     },
     info: {

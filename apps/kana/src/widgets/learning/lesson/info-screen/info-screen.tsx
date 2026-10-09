@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 
 import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import PrimaryButton from "@nihongo/core/shared/ui/buttons/Primary/primary-button";
@@ -60,6 +60,16 @@ const InfoScreen: React.FC<InfoScreenProps> = ({ next, finish, title, blocks, is
   const { t } = useTranslation();
 
   const { width } = useWindowDimensions();
+
+  const containerRef = useRef<React.ComponentRef<typeof View>>(null);
+  const [viewportBottom, setViewportBottom] = useState<number | null>(null);
+
+  const measureViewport = () => {
+    containerRef.current?.measureInWindow((_x, y, _width, height) => {
+      const bottom = y + height - SCROLL_PADDING;
+      setViewportBottom((prev) => (prev === bottom ? prev : bottom));
+    });
+  };
 
   const interactiveBlocks = blocks.filter(
     (item) =>
@@ -125,11 +135,11 @@ const InfoScreen: React.FC<InfoScreenProps> = ({ next, finish, title, blocks, is
   }, TEST_DELAY + 100);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} ref={containerRef} onLayout={measureViewport}>
       <ScrollView
         contentContainerStyle={{
-          paddingTop: 22,
-          paddingBottom: 22,
+          paddingTop: SCROLL_PADDING,
+          paddingBottom: SCROLL_PADDING,
         }}
         style={{
           paddingLeft: insets.left + 16,
@@ -158,6 +168,7 @@ const InfoScreen: React.FC<InfoScreenProps> = ({ next, finish, title, blocks, is
                 if (isExercise) {
                   return (
                     <BorderLetterExercise
+                      viewportBottom={viewportBottom}
                       onComplete={() => nextDelayed()}
                       kana={blockKana}
                       key={idx}
@@ -210,6 +221,8 @@ const InfoScreen: React.FC<InfoScreenProps> = ({ next, finish, title, blocks, is
 };
 
 export default InfoScreen;
+
+const SCROLL_PADDING = 22;
 
 const styles = StyleSheet.create({
   container: {

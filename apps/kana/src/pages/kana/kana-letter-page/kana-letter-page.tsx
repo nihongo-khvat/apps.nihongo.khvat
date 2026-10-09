@@ -16,14 +16,21 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CaretLeftIcon, CaretRightIcon, PencilSimpleIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View, StatusBar, useWindowDimensions, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  StatusBar,
+  useWindowDimensions,
+  ScrollView,
+  LayoutChangeEvent,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ROUTES, RootStackParamList } from "@/app/routes.types";
 import SoundLetter from "@/entities/kana/sound-letter/sound-letter";
 import Symbol from "@/entities/kana/symbol/symbol";
 import SymbolHeader from "@/entities/kana/symbol-header/symbol-header";
-import Draw from "@/features/drawing/ui/draw/draw";
+import Draw, { DRAW_CONTROLS_HEIGHT, MIN_FIT_CANVAS_SIZE } from "@/features/drawing/ui/draw/draw";
 import { useStatisticsContext } from "@/pages/kana/kana-table-list-page/model/hooks";
 import { KanaAlphabet } from "@/shared/constants/kana";
 
@@ -54,6 +61,19 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
 
   const { width, height } = useWindowDimensions();
   const canvasSize = getCanvasSize(width, height);
+
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  const onViewportLayout = (event: LayoutChangeEvent) => {
+    const { height: next } = event.nativeEvent.layout;
+    setViewportHeight((prev) => (prev === next ? prev : next));
+  };
+
+  const onHeaderLayout = (event: LayoutChangeEvent) => {
+    const { height: next } = event.nativeEvent.layout;
+    setHeaderHeight((prev) => (prev === next ? prev : next));
+  };
 
   const { id: LetterIdFromParams, kana: kanaFromParams } = route.params || customProps;
 
@@ -122,6 +142,16 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
     setLetterKana(KanaAlphabet.Hiragana);
   };
 
+  const controlsHeight =
+    currentScreen === Screen.Draw ? DRAW_CONTROLS_HEIGHT : SYMBOL_BUTTONS_HEIGHT;
+  const fitSize =
+    viewportHeight > 0
+      ? Math.max(
+          MIN_FIT_CANVAS_SIZE,
+          Math.min(canvasSize, viewportHeight - headerHeight - CONTENT_GAP * 2 - controlsHeight),
+        )
+      : canvasSize;
+
   return (
     <>
       <ModalHeader
@@ -132,9 +162,10 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
         title={headerTitle}
       />
       <View style={styles.container}>
-        <ScrollView>
+        <ScrollView onLayout={onViewportLayout}>
           <View style={styles.symbolContainer}>
             <View
+              onLayout={onHeaderLayout}
               style={{
                 width: "100%",
                 flexDirection: "row",
@@ -148,7 +179,7 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
               />
             </View>
 
-            <View style={{ marginTop: 16, justifyContent: "center" }}>
+            <View style={{ marginTop: CONTENT_GAP, justifyContent: "center" }}>
               {currentScreen === Screen.Symbol && (
                 <View
                   style={{
@@ -156,20 +187,20 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
                     borderRadius: 24,
                   }}
                 >
-                  <Symbol id={letter.id} kana={letterKana} />
+                  <Symbol id={letter.id} kana={letterKana} size={fitSize} />
                 </View>
               )}
 
               {currentScreen === Screen.Draw && (
-                <Draw kana={letterKana} letter={letter} isTextRecognition />
+                <Draw kana={letterKana} letter={letter} isTextRecognition maxCanvasSize={fitSize} />
               )}
             </View>
 
             <View
               style={{
                 width: "100%",
-                maxWidth: width > canvasSize ? canvasSize : width - 32,
-                marginTop: 16,
+                maxWidth: width > fitSize ? fitSize : width - 32,
+                marginTop: CONTENT_GAP,
               }}
             >
               <View style={styles.buttonContainer}>
@@ -238,6 +269,9 @@ const KanaLetterPage: React.FC<KanaInfoProps> = ({ route, customProps, isOnlyDra
 };
 
 export default KanaLetterPage;
+
+const CONTENT_GAP = 16;
+const SYMBOL_BUTTONS_HEIGHT = 50;
 
 const styles = StyleSheet.create({
   container: {

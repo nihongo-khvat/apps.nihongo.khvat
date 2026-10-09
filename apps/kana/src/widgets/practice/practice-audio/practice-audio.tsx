@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { useHaptic } from "@nihongo/core/shared/contexts/haptic/haptic-context";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { ILetter } from "@nihongo/core/shared/data/lettersTable";
@@ -8,7 +7,7 @@ import useGetRomaji from "@nihongo/core/shared/lib/i18n/hooks/useKey";
 import { Typography } from "@nihongo/core/shared/typography";
 import { SpeakerHighIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import SoundLetter from "@/entities/kana/sound-letter/sound-letter";
 import { OnSubmit } from "@/pages/education/practice/education-practice/lib/types/questions";
@@ -16,6 +15,10 @@ import { usePracticePreferences } from "@/pages/education/practice/practice-pref
 import { useStatisticsContext } from "@/pages/kana/kana-table-list-page/model/hooks";
 import { Kana, KanaAlphabet, PracticeType } from "@/shared/constants/kana";
 import { useFirstClickHandler } from "@/shared/helpers/firstClickHandler";
+import {
+  useAnswerCardSize,
+  ANSWER_CARDS_GAP,
+} from "@/shared/lib/answer-cards/use-answer-card-size";
 
 interface EducationPracticeSelectAnswersProps {
   question: ILetter;
@@ -32,7 +35,7 @@ const PracticeAudio: React.FC<EducationPracticeSelectAnswersProps> = ({
   onCompleted,
 }) => {
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
+  const { cardSize, onLayout } = useAnswerCardSize();
   const { colors } = useThemeContext();
 
   const { recalculateOnce } = useStatisticsContext();
@@ -80,16 +83,6 @@ const PracticeAudio: React.FC<EducationPracticeSelectAnswersProps> = ({
   // * useFirstClickHandler сам мемоизирован — оборачиваем стабильный обработчик.
   const pick = useFirstClickHandler(handlePick, 300);
 
-  const widthCard = useMemo(() => {
-    const totalWidth = width - 50;
-
-    if (totalWidth > TABLET_WIDTH && height < TABLET_WIDTH * 2) return (404 - 50) / 2;
-
-    if (totalWidth > TABLET_WIDTH) return (TABLET_WIDTH - 50) / 2;
-
-    return totalWidth / 2;
-  }, [width, height]);
-
   const { getRomaji } = useGetRomaji();
 
   const getTitle = useCallback(
@@ -118,45 +111,48 @@ const PracticeAudio: React.FC<EducationPracticeSelectAnswersProps> = ({
 
         <Text style={styles.subText}>{t("practice.playAudio")}</Text>
       </View>
-      <View style={styles.container}>
-        <View style={[styles.content, { maxWidth: widthCard * 2 + 50 }]}>
-          {answers?.map((answer, index) => {
-            const cardBackground = (pressed: boolean, marked: boolean | null) => {
-              if (!answerState && pressed) return colors.BgLightGray;
-              if (marked === false) return colors.BgDanger;
-              if (marked === true) return colors.BgSuccess;
-              return colors.BgSecondary;
-            };
+      <View style={styles.container} onLayout={onLayout}>
+        <View style={styles.content}>
+          <View style={[styles.grid, { width: cardSize * 2 + ANSWER_CARDS_GAP }]}>
+            {cardSize > 0 &&
+              answers?.map((answer, index) => {
+                const cardBackground = (pressed: boolean, marked: boolean | null) => {
+                  if (!answerState && pressed) return colors.BgLightGray;
+                  if (marked === false) return colors.BgDanger;
+                  if (marked === true) return colors.BgSuccess;
+                  return colors.BgSecondary;
+                };
 
-            const marked =
-              answerState?.id === answer.id &&
-              answerState?.question === question.id &&
-              index === answerState.index
-                ? answerState.isCorrect
-                : null;
+                const marked =
+                  answerState?.id === answer.id &&
+                  answerState?.question === question.id &&
+                  index === answerState.index
+                    ? answerState.isCorrect
+                    : null;
 
-            const textColor =
-              marked === false || marked === true ? colors.TextWhite : colors.TextPrimary;
+                const textColor =
+                  marked === false || marked === true ? colors.TextWhite : colors.TextPrimary;
 
-            return (
-              <Pressable
-                key={answer.id}
-                onPress={() => pick?.(answer, question.id, index)}
-                style={({ pressed }) => ({
-                  width: widthCard,
-                  height: widthCard,
+                return (
+                  <Pressable
+                    key={answer.id}
+                    onPress={() => pick?.(answer, question.id, index)}
+                    style={({ pressed }) => ({
+                      width: cardSize,
+                      height: cardSize,
 
-                  justifyContent: "center",
-                  alignItems: "center",
+                      justifyContent: "center",
+                      alignItems: "center",
 
-                  backgroundColor: cardBackground(pressed, marked),
-                  borderRadius: 24,
-                })}
-              >
-                <Text style={{ ...Typography.H3, color: textColor }}>{getTitle(answer)}</Text>
-              </Pressable>
-            );
-          })}
+                      backgroundColor: cardBackground(pressed, marked),
+                      borderRadius: 24,
+                    })}
+                  >
+                    <Text style={{ ...Typography.H3, color: textColor }}>{getTitle(answer)}</Text>
+                  </Pressable>
+                );
+              })}
+          </View>
         </View>
       </View>
     </>
@@ -166,18 +162,22 @@ const PracticeAudio: React.FC<EducationPracticeSelectAnswersProps> = ({
 const makeStyles = (colors: ColorsType) =>
   StyleSheet.create({
     container: {
+      flex: 1,
       width: "100%",
-
-      flexDirection: "column",
-      alignItems: "center",
+      marginTop: ANSWER_CARDS_GAP,
     },
     content: {
-      width: "100%",
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
 
+      alignItems: "center",
+    },
+    grid: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 16,
-      alignItems: "center",
+      gap: ANSWER_CARDS_GAP,
       justifyContent: "center",
     },
     buttonContainer: {

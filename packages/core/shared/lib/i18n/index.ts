@@ -1,3 +1,14 @@
+import "@formatjs/intl-pluralrules/polyfill.js";
+import "@formatjs/intl-pluralrules/locale-data/en.js";
+import "@formatjs/intl-pluralrules/locale-data/ru.js";
+import "@formatjs/intl-pluralrules/locale-data/de.js";
+import "@formatjs/intl-pluralrules/locale-data/fr.js";
+import "@formatjs/intl-pluralrules/locale-data/it.js";
+import "@formatjs/intl-pluralrules/locale-data/es.js";
+import "@formatjs/intl-pluralrules/locale-data/pt.js";
+import "@formatjs/intl-pluralrules/locale-data/id.js";
+import "@formatjs/intl-pluralrules/locale-data/ko.js";
+import "@formatjs/intl-pluralrules/locale-data/zh.js";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 

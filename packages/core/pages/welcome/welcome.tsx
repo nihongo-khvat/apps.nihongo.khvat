@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 
 import { AUTH_ROUTES, AuthParamList } from "@nihongo/core/features/auth/routes";
 import { languageList, ShortLanguage } from "@nihongo/core/shared/constants/language";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { useHaptic } from "@nihongo/core/shared/contexts/haptic/haptic-context";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import useSetLanguage from "@nihongo/core/shared/lib/i18n/hooks/useSetLanguage";
@@ -65,7 +66,11 @@ const WelcomePage: React.FC = () => {
         <Text style={styles.title}>{t("common.welcome")}</Text>
       </View>
 
-      <ScrollView style={styles.languageContainer} showsVerticalScrollIndicator={true}>
+      <ScrollView
+        style={styles.languageContainer}
+        contentContainerStyle={styles.languageList}
+        showsVerticalScrollIndicator={true}
+      >
         {languageList.map((item) => (
           <Pressable
             key={item.key}
@@ -136,6 +141,12 @@ const makeStyles = (colors: ColorsType, insets: EdgeInsets) =>
       flex: 1,
       paddingLeft: insets.left + 16,
       paddingRight: insets.right + 16,
+    },
+
+    languageList: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
     },
 
     languageItem: {

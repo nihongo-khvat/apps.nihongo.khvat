@@ -49,10 +49,6 @@ const Korean = {
       seconds: "{{count}}초",
     },
 
-    selectCorrectTransliteration: "올바른 로마자 표기를 선택하세요.",
-    selectHiraganaForWord: "올바른 순서로 히라가나를 선택하세요.",
-    selectKatakanaForWord: "올바른 순서로 가타카나를 선택하세요.",
-
     alert: {
       insufficientKanaSelected: {
         title: "문자가 부족합니다",

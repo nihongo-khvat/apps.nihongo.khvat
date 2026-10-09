@@ -92,11 +92,16 @@ const EducationKanaTableSelected: React.FC<EducationKanaTableProps> = ({ kana, a
   const selectedRef = useRef<Set<string>>(new Set());
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
-  const setSelectedWithRef = useCallback((updater: (prev: Set<string>) => Set<string>) => {
-    const next = updater(selectedRef.current);
-    selectedRef.current = next;
-    setSelected(next);
-  }, []);
+  const setSelectedWithRef = useCallback(
+    (updater: (prev: Set<string>) => Set<string>) => {
+      const next = updater(selectedRef.current);
+      selectedRef.current = next;
+      setSelected(next);
+
+      commitRef.current.fill([...next], getKanaSectionKey(alphabetType, kana));
+    },
+    [alphabetType, kana],
+  );
 
   const commitRef = useRef({ selectedLetters, fill });
   commitRef.current = { selectedLetters, fill };
@@ -301,14 +306,13 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingLeft: 16,
     paddingRight: 16,
-    marginTop: 16,
-    marginBottom: 30,
+    marginBottom: 16,
   },
   rowButtons: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 9,
-    marginTop: 10,
+    marginTop: 8,
   },
 });

@@ -12,15 +12,12 @@ interface FormatResultAnswerProps {
 
 export type ResultSegment = { text: string; isCorrect: boolean };
 
-// * «вопрос → ответ»; ответ разбит на сегменты, чтобы подсветить ошибочные символы
 export type ResultLine = { question: string; answer: ResultSegment[]; isCorrect: boolean };
 
 export interface ResultAnswerView {
   question: PracticeQuestion | null;
 
-  // * заголовок карточек с вариантами ответа и рисования
   title: string;
-  // * строки карточек с подсчётом ошибок (пары, сборка слова, ввод)
   lines: ResultLine[];
   errors: number;
 }
@@ -40,7 +37,6 @@ const selectOf = <Type extends PracticeType>(
   return userSelect.value as UserSelectByType[Type];
 };
 
-// * посимвольное сравнение: лишние и недостающие символы тоже считаются ошибками
 const compareSymbols = (answer: string[], correct: string[]) => {
   const segments = answer.map((text, index) => ({
     text,

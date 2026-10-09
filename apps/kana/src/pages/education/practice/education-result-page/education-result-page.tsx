@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import useGetRomaji from "@nihongo/core/shared/lib/i18n/hooks/useKey";
 import { Typography } from "@nihongo/core/shared/typography";
@@ -159,7 +160,7 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
 
   const isMixedPractice = new Set(questions.map((question) => question.type)).size > 1;
 
-  const answerContentWidth = width - 64;
+  const answerContentWidth = Math.min(width - 32, TABLET_WIDTH) - 32;
   const optionWidth = (answerContentWidth - 8) / 2;
   const canvasSize = (answerContentWidth - 12) / 2;
 
@@ -302,29 +303,31 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
       ]}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>{t("result.title")}</Text>
+        <View style={styles.header__content}>
+          <Text style={styles.title}>{t("result.title")}</Text>
 
-        <View
-          style={styles.header_widgets}
-          onLayout={(e) => setWidgetsWidth(e.nativeEvent.layout.width)}
-        >
-          <View style={widgetStyle}>
-            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
-              {((data.correctAnswers / data.totalQuestions) * 100).toFixed(0)}%
-            </Text>
-            <Text style={styles.header_widget__subtitle}>{t("result.percent")}</Text>
-          </View>
-          <View style={widgetStyle}>
-            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
-              {data.correctAnswers} / {data.totalQuestions}
-            </Text>
-            <Text style={styles.header_widget__subtitle}>{t("result.score")}</Text>
-          </View>
-          <View style={widgetStyle}>
-            <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
-              {totalTime.value}
-            </Text>
-            <Text style={styles.header_widget__subtitle}>{totalTime.unit}</Text>
+          <View
+            style={styles.header_widgets}
+            onLayout={(e) => setWidgetsWidth(e.nativeEvent.layout.width)}
+          >
+            <View style={widgetStyle}>
+              <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+                {((data.correctAnswers / data.totalQuestions) * 100).toFixed(0)}%
+              </Text>
+              <Text style={styles.header_widget__subtitle}>{t("result.percent")}</Text>
+            </View>
+            <View style={widgetStyle}>
+              <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+                {data.correctAnswers} / {data.totalQuestions}
+              </Text>
+              <Text style={styles.header_widget__subtitle}>{t("result.score")}</Text>
+            </View>
+            <View style={widgetStyle}>
+              <Text style={styles.header_widget__title} numberOfLines={1} adjustsFontSizeToFit>
+                {totalTime.value}
+              </Text>
+              <Text style={styles.header_widget__subtitle}>{totalTime.unit}</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -383,7 +386,9 @@ const EducationResultPage: React.FC<EducationResultProps> = ({ route }) => {
       </View>
 
       <View style={{ marginBottom: insets.bottom, marginTop: 16, paddingHorizontal: 20 }}>
-        <PrimaryButton isHapticFeedback text={t("result.done")} onClick={home} />
+        <View style={styles.done}>
+          <PrimaryButton isHapticFeedback text={t("result.done")} onClick={home} />
+        </View>
       </View>
     </View>
   );
@@ -402,11 +407,23 @@ const makeStyles = (colors: ColorsType) =>
       backgroundColor: colors.BgPrimary,
       flexDirection: "column",
       paddingTop: 16,
-      gap: 16,
       borderBottomLeftRadius: 24,
       borderBottomRightRadius: 24,
       paddingBottom: 16,
       paddingHorizontal: 16,
+    },
+
+    header__content: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
+      gap: 16,
+    },
+
+    done: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
     },
 
     title: {
@@ -450,6 +467,9 @@ const makeStyles = (colors: ColorsType) =>
     },
 
     answers: {
+      width: "100%",
+      maxWidth: TABLET_WIDTH,
+      alignSelf: "center",
       gap: 12,
       paddingTop: 16,
     },

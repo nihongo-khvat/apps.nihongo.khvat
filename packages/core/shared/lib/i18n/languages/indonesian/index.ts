@@ -49,10 +49,6 @@ const Indonesian = {
       seconds: "{{count}} dtk",
     },
 
-    selectCorrectTransliteration: "Pilih transliterasi yang benar.",
-    selectHiraganaForWord: "Pilih Hiragana dalam urutan yang benar.",
-    selectKatakanaForWord: "Pilih Katakana dalam urutan yang benar.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Karakter tidak cukup",

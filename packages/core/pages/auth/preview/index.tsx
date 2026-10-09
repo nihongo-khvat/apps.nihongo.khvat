@@ -8,6 +8,7 @@ import {
 import { completeAuth } from "@nihongo/core/features/auth/lib/completeAuth";
 import { googleSignIn } from "@nihongo/core/features/auth/lib/googleAuth";
 import { AUTH_ROUTES, AuthParamList } from "@nihongo/core/features/auth/routes";
+import { TABLET_WIDTH } from "@nihongo/core/shared/constants/sizes";
 import { IS_WELCOME_PAGE } from "@nihongo/core/shared/constants/storageKeys";
 import { useModal } from "@nihongo/core/shared/contexts/modal/modal-context";
 import { AlertModal } from "@nihongo/core/shared/contexts/modal/presets/alert";
@@ -21,7 +22,16 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CaretLeftIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { View, Text, Image, StyleSheet, Pressable, Linking } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Pressable,
+  Linking,
+  ScrollView,
+  useWindowDimensions,
+} from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import authLogo from "../../../shared/assets/auth/avatar.jpg";
@@ -39,7 +49,10 @@ export const LoginPage: React.FC = () => {
 
   const { colors } = useThemeContext();
   const insets = useSafeAreaInsets();
-  const styles = makeStyles(colors, insets);
+  const { width } = useWindowDimensions();
+
+  const imageSize = width > TABLET_WIDTH ? 344 : 192;
+  const styles = makeStyles(colors, insets, imageSize);
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
@@ -120,176 +133,188 @@ export const LoginPage: React.FC = () => {
           position: "absolute",
           left: insets.left + 16,
           top: insets.top + 16,
+          zIndex: 1,
         }}
       >
         <CaretLeftIcon color={colors.BgContrast} size={32} />
       </Pressable>
 
-      <Image style={styles.image} source={authLogo} />
-      <Text style={styles.title}>{t("auth.welcome.firstStep")}</Text>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <Image style={styles.image} source={authLogo} />
+        <Text style={styles.title}>{t("auth.welcome.firstStep")}</Text>
 
-      <View style={styles.subtitle}>
-        <Text
-          style={{
-            height: 20,
-            margin: 0,
-            padding: 0,
-            alignItems: "center",
-            color: colors.TextPrimary,
-            ...Typography.regularLabel,
-          }}
-        >
-          {t("auth.agreement.prefix")}
-        </Text>
-
-        <Pressable
-          onPress={() => {
-            if (termsUrl) Linking.openURL(termsUrl);
-          }}
-          style={{ height: 20, margin: 0, padding: 0, alignItems: "center" }}
-        >
-          {({ pressed }) => (
-            <Text
-              style={[
-                styles.link,
-                { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
-              ]}
-            >
-              {t("auth.agreement.terms")}
-            </Text>
-          )}
-        </Pressable>
-
-        <Text
-          style={{
-            height: 20,
-            margin: 0,
-            padding: 0,
-            alignItems: "center",
-            color: colors.TextPrimary,
-            ...Typography.regularLabel,
-          }}
-        >
-          {" & "}
-        </Text>
-
-        <Pressable
-          onPress={() => {
-            if (privacyPolicyUrl) Linking.openURL(privacyPolicyUrl);
-          }}
-          style={{ height: 20, margin: 0, padding: 0, alignItems: "center" }}
-        >
-          {({ pressed }) => (
-            <Text
-              style={[
-                styles.link,
-                { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
-              ]}
-            >
-              {t("auth.agreement.privacy")}
-            </Text>
-          )}
-        </Pressable>
-      </View>
-
-      <View style={styles.buttons}>
-        <PrimaryButton
-          width="100%"
-          onClick={continueWithGoogle}
-          isDisabled={googleLoading}
-          icon={
-            <View>
-              <Image style={styles.button_image} source={googleIcon}></Image>
-            </View>
-          }
-          containerStyles={{
-            flexDirection: "row",
-            gap: 8,
-          }}
-        >
-          <Text style={styles.button_text}>{t("auth.continueWithGoogle")}</Text>
-        </PrimaryButton>
-
-        <PrimaryButton
-          width="100%"
-          onClick={() => {
-            navigation.navigate(AUTH_ROUTES.SIGN_UP);
-          }}
-          containerStyles={{
-            flexDirection: "row",
-            gap: 8,
-            marginTop: 8,
-            backgroundColor: colors.BgSecondary,
-          }}
-        >
-          <Text style={[styles.button_text, { color: colors.TextPrimary }]}>
-            {t("auth.signUpWithEmail")}
+        <View style={styles.subtitle}>
+          <Text
+            style={{
+              height: 20,
+              margin: 0,
+              padding: 0,
+              alignItems: "center",
+              color: colors.TextPrimary,
+              ...Typography.regularLabel,
+            }}
+          >
+            {t("auth.agreement.prefix")}
           </Text>
-        </PrimaryButton>
 
-        <Pressable
-          onPress={() => {
-            navigation.navigate(AUTH_ROUTES.SIGN_IN);
-          }}
-          style={styles.buttonLink}
-        >
-          {({ pressed }) => (
-            <>
-              <Text style={styles.buttonLinkText}>{t("auth.alreadyHaveAccount")}</Text>
+          <Pressable
+            onPress={() => {
+              if (termsUrl) Linking.openURL(termsUrl);
+            }}
+            style={{ height: 20, margin: 0, padding: 0, alignItems: "center" }}
+          >
+            {({ pressed }) => (
               <Text
                 style={[
-                  styles.buttonLinkBold,
+                  styles.link,
                   { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
                 ]}
               >
-                {t("auth.login")}
+                {t("auth.agreement.terms")}
               </Text>
-            </>
+            )}
+          </Pressable>
+
+          <Text
+            style={{
+              height: 20,
+              margin: 0,
+              padding: 0,
+              alignItems: "center",
+              color: colors.TextPrimary,
+              ...Typography.regularLabel,
+            }}
+          >
+            {" & "}
+          </Text>
+
+          <Pressable
+            onPress={() => {
+              if (privacyPolicyUrl) Linking.openURL(privacyPolicyUrl);
+            }}
+            style={{ height: 20, margin: 0, padding: 0, alignItems: "center" }}
+          >
+            {({ pressed }) => (
+              <Text
+                style={[
+                  styles.link,
+                  { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
+                ]}
+              >
+                {t("auth.agreement.privacy")}
+              </Text>
+            )}
+          </Pressable>
+        </View>
+
+        <View style={styles.buttons}>
+          <PrimaryButton
+            width="100%"
+            onClick={continueWithGoogle}
+            isDisabled={googleLoading}
+            icon={
+              <View>
+                <Image style={styles.button_image} source={googleIcon}></Image>
+              </View>
+            }
+            containerStyles={{
+              flexDirection: "row",
+              gap: 8,
+            }}
+          >
+            <Text style={styles.button_text}>{t("auth.continueWithGoogle")}</Text>
+          </PrimaryButton>
+
+          <PrimaryButton
+            width="100%"
+            onClick={() => {
+              navigation.navigate(AUTH_ROUTES.SIGN_UP);
+            }}
+            containerStyles={{
+              flexDirection: "row",
+              gap: 8,
+              marginTop: 8,
+              backgroundColor: colors.BgSecondary,
+            }}
+          >
+            <Text style={[styles.button_text, { color: colors.TextPrimary }]}>
+              {t("auth.signUpWithEmail")}
+            </Text>
+          </PrimaryButton>
+
+          <Pressable
+            onPress={() => {
+              navigation.navigate(AUTH_ROUTES.SIGN_IN);
+            }}
+            style={styles.buttonLink}
+          >
+            {({ pressed }) => (
+              <>
+                <Text style={styles.buttonLinkText}>{t("auth.alreadyHaveAccount")}</Text>
+                <Text
+                  style={[
+                    styles.buttonLinkBold,
+                    { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
+                  ]}
+                >
+                  {t("auth.login")}
+                </Text>
+              </>
+            )}
+          </Pressable>
+        </View>
+
+        <View style={styles.spacer} />
+
+        <Pressable onPress={skipAuth} style={[styles.buttonLink, styles.skipLink]}>
+          {({ pressed }) => (
+            <Text
+              style={[
+                styles.buttonLinkBold,
+                { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
+              ]}
+            >
+              {t("auth.continueWithoutLogin")}
+            </Text>
           )}
         </Pressable>
-      </View>
-
-      <Pressable
-        onPress={skipAuth}
-        style={[
-          styles.buttonLink,
-          {
-            position: "absolute",
-            bottom: 16 + insets.bottom,
-          },
-        ]}
-      >
-        {({ pressed }) => (
-          <Text
-            style={[
-              styles.buttonLinkBold,
-              { color: pressed ? colors.TextPrimaryPressed : colors.TextPrimary },
-            ]}
-          >
-            {t("auth.continueWithoutLogin")}
-          </Text>
-        )}
-      </Pressable>
+      </ScrollView>
     </View>
   );
 };
 
-const makeStyles = (colors: ColorsType, insets: EdgeInsets) =>
+const makeStyles = (colors: ColorsType, insets: EdgeInsets, imageSize: number) =>
   StyleSheet.create({
     page: {
+      width: "100%",
+      flex: 1,
+    },
+    scroll: {
+      flex: 1,
+    },
+    content: {
       paddingTop: insets.top + 16,
       paddingBottom: insets.bottom + 16,
       paddingLeft: insets.left + 16,
       paddingRight: insets.right + 16,
 
-      width: "100%",
-      flex: 1,
+      flexGrow: 1,
       alignItems: "center",
     },
+    spacer: {
+      flexGrow: 1,
+    },
+    skipLink: {
+      marginTop: 32,
+    },
     image: {
-      width: 192,
-      height: 192,
-      borderRadius: 192,
+      width: imageSize,
+      height: imageSize,
+      borderRadius: imageSize,
     },
     title: {
       ...Typography.H3,
@@ -300,7 +325,7 @@ const makeStyles = (colors: ColorsType, insets: EdgeInsets) =>
 
       textAlign: "center",
 
-      maxWidth: 340,
+      maxWidth: TABLET_WIDTH,
     },
     subtitle: {
       ...Typography.regularLabel,
@@ -316,7 +341,7 @@ const makeStyles = (colors: ColorsType, insets: EdgeInsets) =>
       // textAlign: 'center',
       // alignItems: 'center',
 
-      maxWidth: 360,
+      maxWidth: TABLET_WIDTH,
     },
     link: {
       ...Typography.boldLabel,
@@ -324,6 +349,7 @@ const makeStyles = (colors: ColorsType, insets: EdgeInsets) =>
     },
     buttons: {
       width: "100%",
+      maxWidth: TABLET_WIDTH,
 
       marginTop: 32,
     },

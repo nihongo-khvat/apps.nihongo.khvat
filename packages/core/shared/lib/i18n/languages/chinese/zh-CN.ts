@@ -49,10 +49,6 @@ const ChineseCN = {
       seconds: "{{count}} 秒",
     },
 
-    selectCorrectTransliteration: "选择正确的转写。",
-    selectHiraganaForWord: "按正确顺序选择平假名。",
-    selectKatakanaForWord: "按正确顺序选择片假名。",
-
     alert: {
       insufficientKanaSelected: {
         title: "字符不足",

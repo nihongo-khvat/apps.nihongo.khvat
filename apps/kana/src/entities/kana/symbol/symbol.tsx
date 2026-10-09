@@ -7,11 +7,12 @@ import { useWindowDimensions, View } from "react-native";
 import { KanaAlphabet } from "@/shared/constants/kana";
 import { getImage } from "@/shared/resources/svgs";
 
+const SVG_SIZE = 345;
+
 interface SymbolProps {
   id: string;
   kana: KanaAlphabet.Hiragana | KanaAlphabet.Katakana;
-  width?: number;
-  height?: number;
+  size?: number;
 
   isGray?: boolean;
 }
@@ -19,13 +20,15 @@ interface SymbolProps {
 const Symbol: React.FC<SymbolProps> = ({
   id,
   kana,
+  size,
 
   isGray,
 }) => {
   const { width, height } = useWindowDimensions();
   const { colors } = useThemeContext();
 
-  const canvasSize = getCanvasSize(width, height);
+  const canvasSize = size ?? getCanvasSize(width, height);
+  const scale = Math.min(1, canvasSize / SVG_SIZE);
 
   const getImagePath = (key: string | undefined) => {
     const keyString = `${kana}_${key?.replaceAll("-", "_")}`;
@@ -47,7 +50,17 @@ const Symbol: React.FC<SymbolProps> = ({
         justifyContent: "center",
       }}
     >
-      {getImagePath(id)(fillColor, strokeColor)}
+      <View
+        style={{
+          width: SVG_SIZE,
+          height: SVG_SIZE,
+          alignItems: "center",
+          justifyContent: "center",
+          transform: [{ scale }],
+        }}
+      >
+        {getImagePath(id)(fillColor, strokeColor)}
+      </View>
     </View>
   );
 };

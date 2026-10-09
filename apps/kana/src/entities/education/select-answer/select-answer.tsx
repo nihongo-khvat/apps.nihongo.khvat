@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
     maxWidth: TABLET_WIDTH,
 
     flexDirection: "column",
-    gap: 16,
+    gap: 8,
   },
 });

@@ -51,9 +51,14 @@ export type DrawingSnapshot = {
   canvasSize: number;
 };
 
+export const DRAW_CONTROLS_HEIGHT = 165;
+export const MIN_FIT_CANVAS_SIZE = 200;
+
 interface DrawProps {
   letter: ILetter;
   kana: KanaAlphabet;
+
+  maxCanvasSize?: number;
 
   isCheck?: boolean;
 
@@ -78,6 +83,7 @@ const Draw: React.FC<DrawProps> = ({
   kana,
   isTextRecognition,
   isFullHeight,
+  maxCanvasSize = Infinity,
   onCompleted,
 }) => {
   const { width, height } = useWindowDimensions();
@@ -90,7 +96,7 @@ const Draw: React.FC<DrawProps> = ({
 
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  const canvasSize = getCanvasSize(width, height);
+  const canvasSize = Math.min(getCanvasSize(width, height), maxCanvasSize);
 
   const { settings } = useDrawSettings();
 
@@ -212,7 +218,7 @@ const Draw: React.FC<DrawProps> = ({
   return (
     <GestureHandlerRootView
       style={[
-        { height: canvasSize + 165 },
+        { height: canvasSize + DRAW_CONTROLS_HEIGHT },
         isFullHeight ? { flex: 1, justifyContent: "space-between" } : {},
       ]}
     >
@@ -281,7 +287,7 @@ const Draw: React.FC<DrawProps> = ({
 
             {isShowLetter && !isCheck && (
               <View style={[styles.drawContainerImage, { width: canvasSize, height: canvasSize }]}>
-                <Symbol isGray id={letter?.id} kana={kana} />
+                <Symbol isGray id={letter?.id} kana={kana} size={canvasSize} />
               </View>
             )}
             <Svg height={canvasSize} width={canvasSize}>

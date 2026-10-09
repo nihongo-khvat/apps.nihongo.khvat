@@ -49,10 +49,6 @@ const German = {
       seconds: "{{count}} s",
     },
 
-    selectCorrectTransliteration: "Wähle die richtige Transliteration.",
-    selectHiraganaForWord: "Wähle die Hiragana in der richtigen Reihenfolge.",
-    selectKatakanaForWord: "Wähle die Katakana in der richtigen Reihenfolge.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Nicht genug Zeichen",

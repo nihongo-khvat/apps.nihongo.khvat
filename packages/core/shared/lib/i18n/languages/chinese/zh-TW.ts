@@ -49,10 +49,6 @@ const ChineseTW = {
       seconds: "{{count}} 秒",
     },
 
-    selectCorrectTransliteration: "選擇正確的音譯。",
-    selectHiraganaForWord: "依正確順序選擇平假名。",
-    selectKatakanaForWord: "依正確順序選擇片假名。",
-
     alert: {
       insufficientKanaSelected: {
         title: "字元不足",

@@ -49,10 +49,6 @@ const PortugueseBR = {
       seconds: "{{count}} s",
     },
 
-    selectCorrectTransliteration: "Selecione a transliteração correta.",
-    selectHiraganaForWord: "Selecione o Hiragana na ordem correta.",
-    selectKatakanaForWord: "Selecione o Katakana na ordem correta.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Caracteres insuficientes",

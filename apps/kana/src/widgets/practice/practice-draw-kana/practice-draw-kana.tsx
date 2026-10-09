@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useTransliterationsContext } from "@nihongo/core/shared/contexts/transliteration/transliteration";
 import { ILetter } from "@nihongo/core/shared/data/lettersTable";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 
-import Draw from "@/features/drawing/ui/draw/draw";
+import Draw, { DRAW_CONTROLS_HEIGHT, MIN_FIT_CANVAS_SIZE } from "@/features/drawing/ui/draw/draw";
 import { OnSubmit } from "@/pages/education/practice/education-practice/lib/types/questions";
 import { Kana, KanaAlphabet, PracticeType } from "@/shared/constants/kana";
 import { getTypeById } from "@/shared/helpers/kana-letter";
@@ -22,24 +23,38 @@ const PracticeDrawKana: React.FC<PracticeDrawKanaProps> = ({ symbol, kana, onCom
 
   const { transliterations } = useTransliterationsContext();
 
+  const [areaHeight, setAreaHeight] = useState(0);
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    setAreaHeight((prev) => (prev === height ? prev : height));
+  };
+
   return (
     <View style={styles.screen}>
       <Header
         title={symbol?.transliterations?.[transliterations]}
         subtitle={`${kana === Kana.Hiragana ? t("kana.hiragana") : t("kana.katakana")} (${t(getTypeById(symbol.id))})`}
       />
-      <View style={styles.container}>
-        <Draw
-          onCompleted={(isCorrect, _pickedAnswer, drawing) =>
-            onCompleted({
-              isCorrectAnswer: isCorrect,
-              userSelect: { type: PracticeType.Drawing, value: drawing },
-            })
-          }
-          isCheck
-          letter={symbol}
-          kana={kana === Kana.Hiragana ? KanaAlphabet.Hiragana : KanaAlphabet.Katakana}
-        />
+      <View style={styles.container} onLayout={onLayout}>
+        {areaHeight > 0 && (
+          <GestureHandlerRootView style={styles.scroll}>
+            <ScrollView contentContainerStyle={styles.draw}>
+              <Draw
+                maxCanvasSize={Math.max(MIN_FIT_CANVAS_SIZE, areaHeight - DRAW_CONTROLS_HEIGHT)}
+                onCompleted={(isCorrect, _pickedAnswer, drawing) =>
+                  onCompleted({
+                    isCorrectAnswer: isCorrect,
+                    userSelect: { type: PracticeType.Drawing, value: drawing },
+                  })
+                }
+                isCheck
+                letter={symbol}
+                kana={kana === Kana.Hiragana ? KanaAlphabet.Hiragana : KanaAlphabet.Katakana}
+              />
+            </ScrollView>
+          </GestureHandlerRootView>
+        )}
       </View>
     </View>
   );
@@ -47,12 +62,23 @@ const PracticeDrawKana: React.FC<PracticeDrawKanaProps> = ({ symbol, kana, onCom
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
+    width: "100%",
     gap: 16,
   },
   container: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
+    flex: 1,
+    width: "100%",
+  },
+  scroll: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  draw: {
+    alignItems: "center",
   },
 });
 

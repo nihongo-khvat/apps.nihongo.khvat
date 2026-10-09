@@ -37,18 +37,22 @@ const questionGenerateMultipleChoice = ({
   const toTitle = (item: Word) => transliterateByIndex(item.kana, transliterations);
 
   const correctTitle = toTitle(word);
-  const wrongTitles = [...new Set(shuffleArray([...hiraganaWords, ...katakanaWords]).map(toTitle))]
-    .filter((title) => title !== correctTitle)
-    .slice(0, WRONG_ANSWERS_COUNT);
 
-  if (wrongTitles.length < WRONG_ANSWERS_COUNT) return null;
+  const wrongTitles = new Set<string>();
+  for (const item of shuffleArray([...hiraganaWords, ...katakanaWords])) {
+    const title = toTitle(item);
+    if (title !== correctTitle) wrongTitles.add(title);
+    if (wrongTitles.size === WRONG_ANSWERS_COUNT) break;
+  }
+
+  if (wrongTitles.size < WRONG_ANSWERS_COUNT) return null;
 
   return {
     word,
     kana: kana === KanaAlphabet.Hiragana ? Kana.Hiragana : Kana.Katakana,
     answers: shuffleArray([
       { title: correctTitle, isTrue: true },
-      ...wrongTitles.map((title) => ({ title, isTrue: false })),
+      ...[...wrongTitles].map((title) => ({ title, isTrue: false })),
     ]),
   };
 };

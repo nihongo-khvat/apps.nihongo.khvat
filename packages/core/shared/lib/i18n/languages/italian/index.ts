@@ -49,10 +49,6 @@ const Italian = {
       seconds: "{{count}} s",
     },
 
-    selectCorrectTransliteration: "Seleziona la traslitterazione corretta.",
-    selectHiraganaForWord: "Seleziona l'hiragana nell'ordine corretto.",
-    selectKatakanaForWord: "Seleziona il katakana nell'ordine corretto.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Caratteri insufficienti",

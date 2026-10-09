@@ -2,14 +2,12 @@ import React from "react";
 
 import { useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { Typography } from "@nihongo/core/shared/typography";
-import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 
 import Sequence from "@/entities/education/sequence";
 import { OnSubmit } from "@/pages/education/practice/education-practice/lib/types/questions";
 import { Kana, PracticeType, TEST_DELAY } from "@/shared/constants/kana";
 import { useFirstClickHandler } from "@/shared/helpers/firstClickHandler";
-import Title from "@/widgets/learning/lesson/info-screen/title/title";
 
 interface ChooseLettersProps {
   sequence: string[];
@@ -24,11 +22,9 @@ const EducationPracticeChooseLetters: React.FC<ChooseLettersProps> = ({
   sequence,
   title,
   subtitle,
-  kana,
 
   onCompleted,
 }) => {
-  const { t } = useTranslation();
   const { colors } = useThemeContext();
 
   const onFinish = useFirstClickHandler(
@@ -42,13 +38,10 @@ const EducationPracticeChooseLetters: React.FC<ChooseLettersProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.question, { color: colors.TextPrimary }]}>
-        {kana === Kana.Hiragana
-          ? t("practice.selectHiraganaForWord")
-          : t("practice.selectKatakanaForWord")}
-      </Text>
-
-      <Title title={title} subtitle={subtitle} />
+      <View style={styles.word}>
+        <Text style={[styles.word__title, { color: colors.TextPrimary }]}>{title}</Text>
+        <Text style={[styles.word__subtitle, { color: colors.TextSecondary }]}>({subtitle})</Text>
+      </View>
 
       <Sequence key={sequence.join(", ")} onFinish={onFinish} sequence={sequence} />
     </View>
@@ -64,10 +57,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  question: {
-    width: "100%",
+  word: {
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 32,
+  },
+  word__title: {
+    ...Typography.H2,
     textAlign: "center",
-    ...Typography.boldDefault,
-    marginBottom: 8,
+  },
+  word__subtitle: {
+    ...Typography.regularDefault,
+    textAlign: "center",
   },
 });

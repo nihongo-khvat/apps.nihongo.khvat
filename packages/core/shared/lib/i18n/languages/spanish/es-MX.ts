@@ -49,10 +49,6 @@ const SpanishMX = {
       seconds: "{{count}} s",
     },
 
-    selectCorrectTransliteration: "Selecciona la transliteración correcta.",
-    selectHiraganaForWord: "Selecciona el hiragana en el orden correcto.",
-    selectKatakanaForWord: "Selecciona el katakana en el orden correcto.",
-
     alert: {
       insufficientKanaSelected: {
         title: "No hay suficientes caracteres",

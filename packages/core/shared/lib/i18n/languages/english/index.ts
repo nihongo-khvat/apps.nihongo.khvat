@@ -49,10 +49,6 @@ const English = {
       seconds: "{{count}} s",
     },
 
-    selectCorrectTransliteration: "Select the correct transliteration.",
-    selectHiraganaForWord: "Select the Hiragana in the correct order.",
-    selectKatakanaForWord: "Select the Katakana in the correct order.",
-
     alert: {
       insufficientKanaSelected: {
         title: "Not Enough Characters",

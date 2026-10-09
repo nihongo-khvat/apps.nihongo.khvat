@@ -3,7 +3,7 @@ import React, { useState, useMemo, useRef } from "react";
 import { useHaptic } from "@nihongo/core/shared/contexts/haptic/haptic-context";
 import { ColorsType, useThemeContext } from "@nihongo/core/shared/contexts/theme/theme-context";
 import { Typography } from "@nihongo/core/shared/typography";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, StyleProp, TextStyle } from "react-native";
 
 type ByKey = "kana" | "translate" | "transliteration";
 
@@ -39,16 +39,15 @@ function shuffleArray<T>(array: T[]): T[] {
 function getRightLabel(
   word: Word,
   by: ByKey,
-  textColor: {
-    color: string;
-  }[],
+  textStyle: StyleProp<TextStyle>,
+  translateStyle: StyleProp<TextStyle>,
 ): React.JSX.Element {
   if (by === "kana") {
     return (
       <View>
-        <Text style={[...textColor, Typography.boldDefault]}>{word.transliteration}</Text>
+        <Text style={textStyle}>{word.transliteration}</Text>
 
-        <Text style={[...textColor]}>({word.translate})</Text>
+        <Text style={translateStyle}>({word.translate})</Text>
       </View>
     );
   }
@@ -165,6 +164,13 @@ export default function MatchWordsByField({ onComplete, words, by }: MatchPairsP
     }
   };
 
+  const getTranslateStyle = (state: ItemState) =>
+    state === "error"
+      ? [styles.itemTranslate, styles.itemTextError]
+      : state === "matched"
+        ? [styles.itemTranslate, styles.itemTextMatched]
+        : [styles.itemTranslate];
+
   const rowCount = Math.max(shuffledLeftIndices.length, shuffledRightIndices.length);
 
   return (
@@ -192,7 +198,14 @@ export default function MatchWordsByField({ onComplete, words, by }: MatchPairsP
               activeOpacity={rightState === "matched" ? 1 : 0.7}
               disabled={rightState === "matched"}
             >
-              <View>{getRightLabel(words[rightIndex], by, getTextStyle(rightState))}</View>
+              <View>
+                {getRightLabel(
+                  words[rightIndex],
+                  by,
+                  getTextStyle(rightState),
+                  getTranslateStyle(rightState),
+                )}
+              </View>
             </TouchableOpacity>
           </View>
         );
@@ -230,20 +243,25 @@ const makeStyles = (colors: ColorsType) =>
       borderColor: colors.BorderContrast,
     },
     itemMatched: {
-      opacity: 0.5,
+      borderColor: colors.BgLightGray,
+      backgroundColor: colors.BgLightGray,
     },
     itemError: {
       borderColor: colors.BgDanger,
       backgroundColor: colors.BgDanger,
     },
     itemText: {
-      ...Typography.regularDefault,
+      ...Typography.boldDefault,
       color: colors.TextPrimary,
-      fontWeight: "500",
+      textAlign: "center",
+    },
+    itemTranslate: {
+      ...Typography.regularDefault,
+      color: colors.TextSecondary,
       textAlign: "center",
     },
     itemTextMatched: {
-      color: colors.TextPrimary,
+      color: colors.TextDisabled,
     },
     itemTextError: {
       color: colors.TextWhite,
