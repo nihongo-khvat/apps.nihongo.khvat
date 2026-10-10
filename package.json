@@ -35,6 +35,6 @@
   },
   "patchedDependencies": {
     "react-native-date-picker@5.0.13": "patches/react-native-date-picker@5.0.13.patch",
-    "expo-modules-jsi@58.0.9": "patches/expo-modules-jsi@58.0.9.patch"
+    "expo-modules-jsi@58.0.10": "patches/expo-modules-jsi@58.0.10.patch"
   }
 }
